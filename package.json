@@ -5,7 +5,10 @@
     "git": "^0.1.5",
     "joi": "^14.3.0",
     "mysql": "^2.18.1",
-    "mysql2": "^2.3.3"
+    "mysql2": "^2.3.3",
+    "nodemon": "^2.0.20",
+    "sequelize": "^6.28.0",
+    "sequelize-cli": "^6.5.2"
   },
   "name": "sjprojekat",
   "version": "1.0.0",
