@@ -19,5 +19,8 @@
   "author": "",
   "license": "ISC",
   "keywords": [],
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "faker": "^6.6.6"
+  }
 }
