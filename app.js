@@ -1,44 +1,39 @@
+const express = require('express');
+const path = require('path');
 
-//const { application } = require('express');
-const { sequelize, Users, Posts, Topics } = require('./models');
-const posts = require('./models/posts');
+const usrs = require('./routes/users.js');
+const psts = require('./routes/posts.js');
+const cmts = require('./routes/comments.js');
+const lks = require('./routes/likes.js');
+const intrsts = require('./routes/interests.js');
+const tpcs = require('./routes/topics.js');
+const notifs = require('./routes/notifications.js');
+const usrsnotifs = require('./routes/usersnotifications.js');
+const lpsts = require('./routes/likedposts.js');
+const ppsts = require('./routes/pinnedposts.js');
 
-async function main(){
+const { sequelize } = require('./models');
+const { resourceLimits } = require('worker_threads');
+
+const app = express();
+
+app.use('/api', usrs);
+app.use('/api', psts);
+app.use('/api', cmts);
+app.use('/api', lks);
+app.use('/api', intrsts);
+app.use('/api', tpcs);
+app.use('/api', notifs);
+app.use('/api', usrsnotifs);
+app.use('/api', lpsts);
+app.use('/api', ppsts);
+
+app.use(express.static(path.join(__dirname, 'static')));
+
+app.get('/', (req, res) =>{
+    res.send('index.html');
+});
+
+app.listen({ port: 8000 }, async() => {
     await sequelize.authenticate();
-
-    let user, user1, post, post1, topic1, topic;
-
-    // user1 = await Users.create({
-    //     name: 'user1223',
-    //     email: 'user222@example.com',
-    //     password: 'password'
-
-    //  });
-
-    //  topic1 = await Topics.create({
-    //     userId: user1.id,
-    //     name: 'tema132',   
-    //     description: 'opis123'
-    //  });
-
-    // post = await Posts.create({
-    //     title: 'naziv12332',
-    //     content: 'sadrzaj12',
-    //     userId: user1.id,
-    //     topicId: topic1.id
-    //  });
-
-    user = await Users.findAll();
-    topic = await Topics.findAll();
-
-    //user = await user.destroy();
-
-    user = await Users.findAll();
-    console.log(JSON.stringify(user));
-    //console.log(user);
-
-    await sequelize.close();
-}
-
-main();
-
+});
