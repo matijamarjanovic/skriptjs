@@ -20,7 +20,7 @@ notif.get('/notifications/:id', (req, res) => {
 });
 
 notif.post('/notifications/', (req, res) => {
-    Notifications.create({ notifType: req.body.notifType, postId: req.body.postId })
+    Notifications.create({ postId: req.body.postId, notifType: req.body.notifType,  content: req.body.content })
         .then(rows => res.json(rows))
         .catch(err => res.status(500).json(err));
 });
@@ -28,8 +28,10 @@ notif.post('/notifications/', (req, res) => {
 notif.put('/notifications/:id', (req, res) => {
     Notifications.findOne({where : {id : req.params.id}})
         .then( notif => {
-               lpst.notifType = req.body.notifType;;
-               lpst.postId = req.body.postId;
+                notif.notifType = req.body.notifType;;
+                notif.postId = req.body.postId;
+                notif.content = req.body.content;
+
                notif.save();
         })
         .then( rows => res.json(rows))

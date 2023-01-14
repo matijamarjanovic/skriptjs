@@ -3,7 +3,7 @@ const { sequelize , Users, Posts, Likes, Comments, Interests, Topics,
  
 const express = require('express');
 const rtr = require('./users.js');
-rtr = require('./posts.js');
+
 
 
  module.exports = rtr;

@@ -34,6 +34,6 @@ app.get('/', (req, res) =>{
     res.send('index.html');
 });
 
-app.listen({ port: 8000 }, async() => {
+app.listen({ port: 8080 }, async() => {
     await sequelize.authenticate();
 });

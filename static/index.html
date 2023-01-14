@@ -17,12 +17,16 @@
                     <form method="post" action="/api/users">
                         <div class="mb-3">
                             <label for="name" class="form-label">Name</label>
-                            <input type="text" class="form-control" id="name" name="name">
+                            <input type="text" class="form-control" id="userName" name="name">
                         </div>
                         <div class="mb-3">
                             <label for="email" class="form-label">Email address</label>
                             <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp">
                             <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password </label>
+                            <input type="password" class="form-control" id="password" name="password" aria-describedby="passwordHelp">
                         </div>
                         <button type="submit" class="btn btn-primary" id="usrBtn">Submit</button>
                     </form>
@@ -37,21 +41,217 @@
         <div class="container">
             <div class="row">
                 <div class="col">
-                    <form method="post" action="/api/messages">
+                    <form method="post" action="/api/posts">
+                        <div class="mb-3">
+                            <label for="topicId" class="form-label">topicId</label>
+                            <input type="text" class="form-control" id="psttopicId" name="topicId">
+                        </div>
                         <div class="mb-3">
                             <label for="userId" class="form-label">userId</label>
-                            <input type="text" class="form-control" id="userId" name="userId">
+                            <input type="text" class="form-control" id="pstuserId" name="userId">
                         </div>
                         <div class="mb-3">
-                            <label for="body" class="form-label">Body</label>
-                            <textarea class="form-control" id="body" name="body" rows="3"></textarea>
+                            <label for="title" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="psttitle" name="title">
                         </div>
-                        <button type="submit" class="btn btn-primary" id="msgBtn">Submit</button>
+                        <div class="mb-3">
+                            <label for="content" class="form-label">Content</label>
+                            <textarea class="form-control" id="pstcontent" name="content" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="pstBtn">Submit</button>
                     </form>
                 </div>
                 <div class="col-6">
-                    <h2>Messages:</h2>
-                    <ul id="msgLst"></ul>
+                    <h2>Posts:</h2>
+                    <ul id="pstLst"></ul>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <form method="post" action="/api/comments">
+                        <div class="mb-3">
+                            <label for="postId" class="form-label">postId</label>
+                            <input type="text" class="form-control" id="cmtpostId" name="postId">
+                        </div>
+                        <div class="mb-3">
+                            <label for="userId" class="form-label">userId</label>
+                            <input type="text" class="form-control" id="cmtuserId" name="userId">
+                        </div>
+                        <div class="mb-3">
+                            <label for="content" class="form-label">Content</label>
+                            <textarea class="form-control" id="cmtcontent" name="content" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="cmtBtn">Submit</button>
+                    </form>
+                </div>
+                <div class="col-6">
+                    <h2>Comments NE RADI SUBMIT:</h2>
+                    <ul id="cmtLst"></ul>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <form method="post" action="/api/interests">
+                        <div class="mb-3">
+                            <label for="topicId" class="form-label">topicId</label>
+                            <input type="text" class="form-control" id="intrtopicId" name="topicId">
+                        </div>
+                        <div class="mb-3">
+                            <label for="userId" class="form-label">userId</label>
+                            <input type="text" class="form-control" id="intruserId" name="userId">
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="intrBtn">Submit</button>
+                    </form>
+                </div>
+                <div class="col-6">
+                    <h2>Interests:</h2>
+                    <ul id="intrLst"></ul>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <form method="post" action="/api/likedposts">
+                        <div class="mb-3">
+                            <label for="postId" class="form-label">postId</label>
+                            <input type="text" class="form-control" id="lpstpostId" name="postId">
+                        </div>
+                        <div class="mb-3">
+                            <label for="userId" class="form-label">userId</label>
+                            <input type="text" class="form-control" id="lpstuserId" name="userId">
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="lpstBtn">Submit</button>
+                    </form>
+                </div>
+                <div class="col-6">
+                    <h2>Liked Posts:</h2>
+                    <ul id="lpstLst"></ul>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <form method="post" action="/api/likes">
+                        <div class="mb-3">
+                            <label for="postId" class="form-label">postId</label>
+                            <input type="text" class="form-control" id="lkpostId" name="postId">
+                        </div>
+                        <div class="mb-3">
+                            <label for="userId" class="form-label">userId</label>
+                            <input type="text" class="form-control" id="lkuserId" name="userId">
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="lkBtn">Submit</button>
+                    </form>
+                </div>
+                <div class="col-6">
+                    <h2>Likes:</h2>
+                    <ul id="lkLst"></ul>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <form method="post" action="/api/notifications">
+                        <div class="mb-3">
+                            <label for="postId" class="form-label">postId</label>
+                            <input type="text" class="form-control" id="notifpostId" name="postId">
+                        </div>
+                        <div class="mb-3">
+                            <label for="notifType" class="form-label">notifType</label>
+                            <input type="text" class="form-control" id="notifType" name="notifType">
+                        </div>
+                        <div class="mb-3">
+                            <label for="notifContent" class="form-label">Content</label>
+                            <input type="text" class="form-control" id="notifContent" name="notifType">
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="notifBtn">Submit</button>
+                    </form>
+                </div>
+                <div class="col-6">
+                    <h2>Notifications:</h2>
+                    <ul id="notifLst"></ul>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <form method="post" action="/api/topics">
+                        <div class="mb-3">
+                            <label for="tpName" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="tpName" name="tpName">
+                        </div>
+                        <div class="mb-3">
+                            <label for="userId" class="form-label">userId</label>
+                            <input type="text" class="form-control" id="tpuserId" name="userId">
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="tpBtn">Submit</button>
+                    </form>
+                </div>
+                <div class="col-6">
+                    <h2>Topics:</h2>
+                    <ul id="tpLst"></ul>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <form method="post" action="/api/pinnedposts">
+                        <div class="mb-3">
+                            <label for="postId" class="form-label">postId</label>
+                            <input type="text" class="form-control" id="ppstpostId" name="postId">
+                        </div>
+                        <div class="mb-3">
+                            <label for="userId" class="form-label">userId</label>
+                            <input type="text" class="form-control" id="ppstuserId" name="userId">
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="ppstBtn">Submit</button>
+                    </form>
+                </div>
+                <div class="col-6">
+                    <h2>Pinned Posts:</h2>
+                    <ul id="ppstLst"></ul>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <form method="post" action="/api/usersnotifications">
+                        <div class="mb-3">
+                            <label for="notificationId" class="form-label">notificationId</label>
+                            <input type="text" class="form-control" id="notificationId" name="notificationId">
+                        </div>
+                        <div class="mb-3">
+                            <label for="userId" class="form-label">userId</label>
+                            <input type="text" class="form-control" id="unuserId" name="userId">
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="unBtn">Submit</button>
+                    </form>
+                </div>
+                <div class="col-6">
+                    <h2>UsersNotifications:</h2>
+                    <ul id="unLst"></ul>
                 </div>
             </div>
         </div>
