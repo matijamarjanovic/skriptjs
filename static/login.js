@@ -1,4 +1,7 @@
+
 function init() {
+    const joi = require('joi');
+
     document.getElementById('btn').addEventListener('click', e => {
         e.preventDefault();
 

@@ -1,6 +1,7 @@
-const joi = require('joi');
 
 function init() {
+    const joi = require('joi');
+
     document.getElementById('btn').addEventListener('click', e => {
         e.preventDefault();
 
@@ -28,7 +29,7 @@ function init() {
             alert('Invalid data entered');
         }else {
             fetch('http://localhost:9090/register',{
-                method: 'POST',
+                method: 'post',
                 headers: {
                     'Content-Type': 'application/json',
                     },
