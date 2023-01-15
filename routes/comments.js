@@ -6,6 +6,39 @@ const { INTEGER } = require('sequelize');
  const cmt = express.Router();
  cmt.use(express.json());
  cmt.use(express.urlencoded({ extended: true }));
+
+ require('dotenv').config();
+ const jwt = require('jsonwebtoken');
+ function getCookies(req){
+     if (req.headers.cookie == null) return {};
+ 
+     const rawCookie = req.headers.cookie.split('; ');
+     const parsedCookies = {};
+ 
+     rawCookie.forEach(el => {
+         const tmp = el.split('=');
+         parsedCookies[tmp[0]] = tmp[1];
+     });
+ 
+     return parsedCookies;
+ }
+ 
+ function authToken(req, res, next) {
+     const cookies = getCookies(req);
+     const token = cookies['token'];
+ 
+     if (token === null) return res.redirect(301, '/login');
+ 
+     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, usr) => {
+         if (err) return res.redirect(301, '/login');
+ 
+         req.user = usr;
+ 
+         next();
+     });
+ }
+
+ cmt.use(authToken);
  
  cmt.get('/comments', (req, res) => {
     Comments.findAll()
@@ -20,7 +53,8 @@ const { INTEGER } = require('sequelize');
          .catch(err => res.status(500).json(err));
  });
  
- cmt.post('/comments/', async (req, res) => {
+
+ cmt.post('/comments/', authToken, async (req, res) => {
 
     const existingPost = await Posts.findOne({where : {id : req.body.postId}});
     const existingUser = await Users.findOne({where : {id : req.body.userId}});

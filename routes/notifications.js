@@ -6,6 +6,39 @@ const notif = express.Router();
 notif.use(express.json());
 notif.use(express.urlencoded({ extended: true }));
 
+require('dotenv').config();
+const jwt = require('jsonwebtoken');
+function getCookies(req){
+    if (req.headers.cookie == null) return {};
+
+    const rawCookie = req.headers.cookie.split('; ');
+    const parsedCookies = {};
+
+    rawCookie.forEach(el => {
+        const tmp = el.split('=');
+        parsedCookies[tmp[0]] = tmp[1];
+    });
+
+    return parsedCookies;
+}
+
+notif.use(authToken);
+
+function authToken(req, res, next) {
+    const cookies = getCookies(req);
+    const token = cookies['token'];
+
+    if (token === null) return res.redirect(301, '/login');
+
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, usr) => {
+        if (err) return res.redirect(301, '/login');
+
+        req.user = usr;
+
+        next();
+    });
+}
+
 notif.get('/notifications', (req, res) => {
     Notifications.findAll()
         .then(rows => res.json(rows))

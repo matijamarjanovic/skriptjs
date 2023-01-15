@@ -7,6 +7,39 @@ const { sequelize , Users, Posts, Likes, Comments, Interests, Topics,
     lpst.use(express.json());
     lpst.use(express.urlencoded({ extended: true }));
     
+    require('dotenv').config();
+    const jwt = require('jsonwebtoken');
+    function getCookies(req){
+        if (req.headers.cookie == null) return {};
+
+        const rawCookie = req.headers.cookie.split('; ');
+        const parsedCookies = {};
+
+        rawCookie.forEach(el => {
+            const tmp = el.split('=');
+            parsedCookies[tmp[0]] = tmp[1];
+        });
+
+        return parsedCookies;
+    }
+
+    function authToken(req, res, next) {
+        const cookies = getCookies(req);
+        const token = cookies['token'];
+
+        if (token === null) return res.redirect(301, '/login');
+
+        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, usr) => {
+            if (err) return res.redirect(301, '/login');
+
+            req.user = usr;
+
+            next();
+        });
+    }
+
+    lpst.use(authToken);
+    
     lpst.get('/likedposts', (req, res) => {
        LikedPosts.findAll()
             .then(rows => res.json(rows))
