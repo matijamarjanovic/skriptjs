@@ -9,24 +9,12 @@ lk.use(express.urlencoded({ extended: true }));
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
 
-function getCookies(req){
-    if (req.headers.cookie == null) return {};
 
-    const rawCookie = req.headers.cookie.split('; ');
-    const parsedCookies = {};
-
-    rawCookie.forEach(el => {
-        const tmp = el.split('=');
-        parsedCookies[tmp[0]] = tmp[1];
-    });
-
-    return parsedCookies;
-}
-lk.use(authToken);
 
 function authToken(req, res, next) {
-    const cookies = getCookies(req);
-    const token = cookies['token'];
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
 
     if (token === null) return res.redirect(301, '/login');
 
@@ -38,6 +26,8 @@ function authToken(req, res, next) {
         next();
     });
 }
+
+lk.use(authToken);
 
 lk.get('/likes', (req, res) => {
     Likes.findAll()
