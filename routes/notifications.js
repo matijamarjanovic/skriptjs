@@ -31,12 +31,10 @@ notif.post('/notifications/', async(req, res) => {
             (req.body.content === 'Your post has a new like.' && req.body.notifType === 'like'))
             goodNotif = true;
     
-    if (existingPost && goodNotif && !empty){
+    if (existingPost && goodNotif){
         Notifications.create({ postId: req.body.postId, notifType: req.body.notifType,  content: req.body.content })
         .then(rows => res.json(rows))
         .catch(err => res.status(500).json(err));
-    }else if(empty) {
-        res.status(400).send({message: 'Please fill all the fields!'});
     }else{
         res.status(400).send({message: 'Error creating a notification, invalid post ID or notification is not written correctly.'});
     }
@@ -54,7 +52,7 @@ notif.put('/notifications/:id', async(req, res) => {
             (req.body.content === 'Your post has a new like.' && req.body.notifType === 'like'))
             goodNotif = true;
     
-    if (existingPost && goodNotif && !empty){
+    if (existingPost && goodNotif){
         Notifications.findOne({where : {id : req.params.id}})
         .then( notif => {
                 notif.notifType = req.body.notifType;;
@@ -65,8 +63,6 @@ notif.put('/notifications/:id', async(req, res) => {
         })
         .then( rows => res.json(rows))
         .catch(err => res.status(500).json(err));
-    }else if(empty) {
-        res.status(400).send({message: 'Please fill all the fields!'});
     }else{
         res.status(400).send({message: 'Error creating a notification, invalid post ID or notification is not written correctly.'});
     }

@@ -22,16 +22,16 @@ usrsnotif.get('/usersnotifications/:id', (req, res) => {
 usrsnotif.post('/usersnotifications/', async(req, res) => {
     const existingNotification = await Notifications.findOne({where : {id : req.body.notificationId}});
     const existingUser = await Users.findOne({where : {id : req.body.userId}});
-
+    const empty = true;
+    
     if(req.body.notificationId === '' ||req.body.userId === '')
     empty = false;
-    if (existingNotification && existingUser && !empty) {
+    
+    if (existingNotification && existingUser) {
         Notifications.create({ userId: req.body.userId, notificationId: req.body.notificationId })
         .then(rows => res.json(rows))
         .catch(err => res.status(500).json(err));
 
-    }else if (empty){
-        res.status(400).send({message: 'Please fill all the fields!'});
     }else{
         res.status(400).send({message: 'Error creating a usernotification, invalid user or notification ID'});
     }
@@ -56,8 +56,6 @@ usrsnotif.put('/usersnotifications/:id', async(req, res) => {
         })
         .then( rows => res.json(rows))
         .catch(err => res.status(500).json(err));
-    }else if (empty){
-        res.status(400).send({message: 'Please fill all the fields!'});
     }else{
         res.status(400).send({message: 'Error updating a usernotification, invalid user or notification ID'});
     }

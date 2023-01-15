@@ -28,12 +28,10 @@ const { sequelize , Users, Posts, Likes, Comments, Interests, Topics,
         if(req.body.postId === '' ||req.body.userId === '') 
             empty = false;
 
-        if (existingPost && existingUser && !empty) {
+        if (existingPost && existingUser) {
             LikedPosts.create({ userId: req.body.userId, postId: req.body.postId})
             .then(rows => res.json(rows))
             .catch(err => res.status(500).json(err));
-        }else if(empty) {
-            res.status(400).send({message: 'Please fill all the fields!'});
         }else{
             res.status(400).send({message: 'Error creating a liked post, invalid user or post ID'});
         }
@@ -48,7 +46,7 @@ const { sequelize , Users, Posts, Likes, Comments, Interests, Topics,
         if(req.body.postId === '' ||req.body.userId === '') 
             empty = false;
 
-        if (existingPost && existingUser && !empty) {
+        if (existingPost && existingUser) {
             LikedPosts.findOne({where : {id : req.params.id}})
             .then( lpst=> {
                 lpst.userId = req.body.userId;
@@ -58,8 +56,6 @@ const { sequelize , Users, Posts, Likes, Comments, Interests, Topics,
             })
             .then( rows => res.json(rows))
             .catch(err => res.status(500).json(err));
-        }else if(empty) {
-            res.status(400).send({message: 'Please fill all the fields!'});
         }else{
             res.status(400).send({message: 'Error creating a liked post, invalid user or post ID'});
         }

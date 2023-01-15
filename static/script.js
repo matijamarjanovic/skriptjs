@@ -406,8 +406,9 @@ function init() {
                  userId: document.getElementById('ppstuserId').value 
                  
              }
-             document.getElementById('ppstpostId').value = '';
-             document.getElementById('ppstuserId').value = '';
+                document.getElementById('ppstpostId').value = '';
+                document.getElementById('ppstuserId').value = '';
+           
              if (data.name == '' || data.userId === ''|| data.description === '') {
                 alert('Please fill out all the fields.');
             }else{
@@ -427,6 +428,7 @@ function init() {
                         document.getElementById('ppstLst').innerHTML += `<li>ID: ${data.id}, postId: ${data.postId}, userId: ${data.userId}</li>`;
         
                 });
+                
             }
          });
         //UsersNotifications --------------------------------------------------------
@@ -462,9 +464,7 @@ function init() {
                     })
                         .then(res => res.json())
                         .then(data => {
-                            if (data.message === 'Please fill all the fields!')
-                                alert(data.message);
-                            else if (data.message === 'Error creating a usernotification, invalid user or notification ID')
+                             if (data.message === 'Error creating a usernotification, invalid user or notification ID')
                                 alert(data.message);
                             else
                             document.getElementById('unLst').innerHTML += `<li>ID: ${data.id}, notificationId: ${data.notificationId}, userId: ${data.userId}</li>`;

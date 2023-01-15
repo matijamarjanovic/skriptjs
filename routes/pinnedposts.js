@@ -27,12 +27,10 @@ ppst.post('/pinnedposts/', async(req, res) => {
     if(req.body.postId === '' ||req.body.userId === '') 
         empty = false;
 
-    if (existingPost && existingUser && !empty){
+    if (existingPost && existingUser){
         PinnedPosts.create({ userId: req.body.userId, postId: req.body.postId })
         .then(rows => res.json(rows))
         .catch(err => res.status(500).json(err));
-    }else if(empty) {
-        res.status(400).send({message: 'Please fill all the fields!'});
     }else{
         res.status(400).send({message: 'Error creating a pinned post, invalid user or post ID'});
     }
@@ -47,7 +45,7 @@ ppst.put('/pinnedposts/:id', async(req, res) => {
     if(req.body.postId === '' ||req.body.userId === '') 
         empty = false;
 
-    if (existingPost && existingUser && !empty){
+    if (existingPost && existingUser){
         PinnedPosts.findOne({where : {id : req.params.id}})
         .then( ppst => {
                ppst.userId = req.body.userId;
@@ -56,8 +54,6 @@ ppst.put('/pinnedposts/:id', async(req, res) => {
         })
         .then( rows => res.json(rows))
         .catch(err => res.status(500).json(err));
-    }else if(empty) {
-        res.status(400).send({message: 'Please fill all the fields!'});
     }else{
         res.status(400).send({message: 'Error creating a pinned post, invalid user or post ID'});
     }

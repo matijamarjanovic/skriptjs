@@ -27,12 +27,10 @@ lk.post('/likes/', async(req, res) => {
     if(req.body.postId === '' ||req.body.userId === '') 
         empty = false;
 
-    if (existingPost && existingUser && !empty) {
+    if (existingPost && existingUser) {
         Likes.create({ userId: req.body.userId, postId: req.body.postId })
         .then(rows => res.json(rows))
         .catch(err => res.status(500).json(err));
-    }else if(empty) {
-        res.status(400).send({message: 'Please fill all the fields!'});
     }else{
         res.status(400).send({message: 'Error creating a like, invalid user or post ID'});
     }
@@ -48,7 +46,7 @@ lk.put('/likes/:id', async(req, res) => {
     if(req.body.postId === '' ||req.body.userId === '') 
         empty = false;
 
-    if (existingPost && existingUser && !empty) {
+    if (existingPost && existingUser) {
         Likes.findOne({where : {id : req.params.id}})
         .then( lk => {
                lk.userId = req.body.userId;
@@ -57,8 +55,6 @@ lk.put('/likes/:id', async(req, res) => {
         })
         .then( rows => res.json(rows))
         .catch(err => res.status(500).json(err));
-    }else if(empty) {
-        res.status(400).send({message: 'Please fill all the fields!'});
     }else{
         res.status(400).send({message: 'Error creating a like, invalid user or post ID'});
     }

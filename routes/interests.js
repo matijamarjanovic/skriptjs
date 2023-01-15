@@ -29,12 +29,10 @@ const { sequelize , Users, Posts, Likes, Comments, Interests, Topics,
     if(req.body.topicId === '' ||req.body.userId === '') 
         empty = false;
 
-    if (existingTopic && existingUser && !empty){
+    if (existingTopic && existingUser){
         Interests.create({ userId: req.body.userId, topicId: req.body.topicId})
             .then(rows => res.json(rows))
             .catch(err => res.status(500).json(err));
-    }else if(empty) {
-        res.status(400).send({message: 'Please fill all the fields!'});
     }else{
         res.status(400).send({message: 'Error creating an interest, invalid user or topic ID'});
     }
@@ -50,7 +48,7 @@ const { sequelize , Users, Posts, Likes, Comments, Interests, Topics,
         if(req.body.topicId === '' ||req.body.userId === '') 
             empty = false;
     
-        if (existingTopic && existingUser && !empty){
+        if (existingTopic && existingUser){
             Interests.findOne({where : {id : req.params.id}})
             .then( intrst=> {
                 intrst.userId = req.body.userId;
@@ -60,8 +58,6 @@ const { sequelize , Users, Posts, Likes, Comments, Interests, Topics,
             })
             .then( rows => res.json(rows))
             .catch(err => res.status(500).json(err));
-        }else if(empty) {
-            res.status(400).send({message: 'Please fill all the fields!'});
         }else{
             res.status(400).send({message: 'Error creating an interest, invalid user or topic ID'});
         }  

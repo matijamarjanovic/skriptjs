@@ -35,12 +35,10 @@ usr.post('/users/', async (req, res) => {
     if(req.body.name === '' ||req.body.email === '' || req.body.password === '') 
         empty = false;
 
-    if (existingUser && !empty) {
+    if (existingUser) {
         return res.status(400).send({message: 'User already exists in the database!'});
     }else if(existingUser2){
         return res.status(400).send({message: 'Email already exists in the database!'});
-    }else if(empty) {
-        res.status(400).send({message: 'Please fill all the fields!'});
     }else{
         Users.create({ name: req.body.name, email: req.body.email, password: req.body.password})
             .then(rows => res.json(rows))
@@ -63,13 +61,12 @@ usr.put('/users/:id', async (req, res) => {
     if(req.body.name === '' ||req.body.email === '' || req.body.password === '') 
         empty = false;
 
-    if (existingUser && !empty) {
+    if (existingUser) {
         return res.status(400).send({message: 'User already exists in the database!'});
     }else if(existingUser2){
         return res.status(400).send({message: 'Email already exists in the database!'});
-    }else if(empty) {
-        res.status(400).send({message: 'Please fill all the fields!'});
     }else{
+
         Users.findOne({where : {id : req.params.id}})
         .then( usr => {
             usr.name = req.body.name;

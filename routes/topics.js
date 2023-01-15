@@ -25,12 +25,10 @@ tp.post('/topics/', async(req, res) => {
     if(req.body.name === '' ||req.body.userId === '' || req.body.description === '') 
         empty = false;
 
-    if (existingUser && !empty) {
+    if (existingUser) {
         Topics.create({ userId: req.body.userId, name: req.body.name, description: req.body.description })
         .then(rows => res.json(rows))
         .catch(err => res.status(500).json(err));
-    }else if(empty) {
-        res.status(400).send({message: 'Please fill all the fields!'});
     }else{
         res.status(400).send({message: 'Error creating a topic, invalid user ID'});
     }
@@ -45,7 +43,7 @@ tp.put('/topics/:id', async(req, res) => {
     if(req.body.name === '' ||req.body.userId === '' || req.body.description === '') 
         empty = false;
 
-    if (existingUser && !empty) {
+    if (existingUser) {
         Topics.findOne({where : {id : req.params.id}})
         .then( tp => {
                tp.userId = req.body.userId;
@@ -55,8 +53,6 @@ tp.put('/topics/:id', async(req, res) => {
         })
         .then( rows => res.json(rows))
         .catch(err => res.status(500).json(err));
-    }else if(empty) {
-        res.status(400).send({message: 'Please fill all the fields!'});
     }else{
         res.status(400).send({message: 'Error creating a topic, invalid user ID'});
     }

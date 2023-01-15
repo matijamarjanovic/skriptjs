@@ -27,12 +27,10 @@ const { sequelize , Users, Posts, Likes, Comments, Interests, Topics,
     if(req.body.postId === '' ||req.body.userId === '' || req.body.content === '') 
         empty = false;
 
-    if (existingPost && existingUser && !empty) {
+    if (existingPost && existingUser) {
         Comments.create({ postId: req.body.postId, userId: req.body.userId, content: req.body.content})
          .then(rows => res.json(rows))
          .catch(err => res.status(500).json(err));
-    }else if(empty) {
-        res.status(400).send({message: 'Please fill all the fields!'});
     }else{
         res.status(400).send({message: 'Error creating a comment, invalid user or post ID'});
     }
@@ -47,7 +45,7 @@ const { sequelize , Users, Posts, Likes, Comments, Interests, Topics,
     if(req.body.postId === '' ||req.body.userId === '' || req.body.content === '') 
         empty = false;
 
-    if (existingPost && existingUser && !empty) {
+    if (existingPost && existingUser) {
         Comments.findOne({where : {id : req.params.id}})
         .then( cmt => {
             cmt.postId = req.body.postId;
@@ -58,8 +56,6 @@ const { sequelize , Users, Posts, Likes, Comments, Interests, Topics,
         })
         .then( rows => res.json(rows))
         .catch(err => res.status(500).json(err));
-    }else if(empty) {
-        res.status(400).send({message: 'Please fill all the fields!'});
     }else{
         res.status(400).send({message: 'Error creating a comment, invalid user or post ID'});
     }
