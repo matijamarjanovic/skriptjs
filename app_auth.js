@@ -8,7 +8,7 @@ require('dotenv').config();
 const app = express();
 
 var corsOptions = {
-    origin: 'https://localhost:8080',
+    origin: 'https://127.0.0.1:8080',
     optionsSuccessStatus: 200
 }
 

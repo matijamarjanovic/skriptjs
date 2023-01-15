@@ -12,6 +12,8 @@ const usrsnotifs = require('./routes/usersnotifications.js');
 const lpsts = require('./routes/likedposts.js');
 const ppsts = require('./routes/pinnedposts.js');
 
+
+
 const { sequelize } = require('./models');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
