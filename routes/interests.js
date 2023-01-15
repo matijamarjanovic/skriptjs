@@ -25,7 +25,7 @@ const { sequelize , Users, Posts, Likes, Comments, Interests, Topics,
     const existingTopic = await Topics.findOne({where : {id : req.body.topicId}});
     const existingUser = await Users.findOne({where : {id : req.body.userId}});
     
-    const empty = true;
+    let empty = true;
     if(req.body.topicId === '' ||req.body.userId === '') 
         empty = false;
 
@@ -44,7 +44,7 @@ const { sequelize , Users, Posts, Likes, Comments, Interests, Topics,
         const existingTopic = await Topics.findOne({where : {id : req.body.topicId}});
         const existingUser = await Users.findOne({where : {id : req.body.userId}});
         
-        const empty = true;
+        let empty = true;
         if(req.body.topicId === '' ||req.body.userId === '') 
             empty = false;
     

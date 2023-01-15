@@ -22,16 +22,16 @@ notif.get('/notifications/:id', (req, res) => {
 notif.post('/notifications/', async(req, res) => {
     const existingPost = await Posts.findOne({where : {id : req.body.postId}});
     const goodNotif = false;
-    const empty = true;
+    let empty = true;
 
     if(req.body.content === '' ||req.body.notifType === '' || req.body.postId === '') 
         empty = false;
 
     if ((req.body.content === 'Your post has a new comment.' && req.body.notifType === 'comment') ||
             (req.body.content === 'Your post has a new like.' && req.body.notifType === 'like'))
-            goodNotif = true;
+            goodNotif => true;
     
-    if (existingPost && goodNotif){
+    if (goodNotif){
         Notifications.create({ postId: req.body.postId, notifType: req.body.notifType,  content: req.body.content })
         .then(rows => res.json(rows))
         .catch(err => res.status(500).json(err));
@@ -43,7 +43,7 @@ notif.post('/notifications/', async(req, res) => {
 notif.put('/notifications/:id', async(req, res) => {
     const existingPost = await Posts.findOne({where : {id : req.body.postId}});
     const goodNotif = false;
-    const empty = true;
+    let empty = true;
 
     if(req.body.content === '' ||req.body.notifType === '' || req.body.postId === '') 
         empty = false;
@@ -52,7 +52,7 @@ notif.put('/notifications/:id', async(req, res) => {
             (req.body.content === 'Your post has a new like.' && req.body.notifType === 'like'))
             goodNotif = true;
     
-    if (existingPost && goodNotif){
+    if (goodNotif){
         Notifications.findOne({where : {id : req.params.id}})
         .then( notif => {
                 notif.notifType = req.body.notifType;;

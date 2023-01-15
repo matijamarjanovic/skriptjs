@@ -21,30 +21,35 @@ tp.get('/topics/:id', (req, res) => {
 
 tp.post('/topics/', async(req, res) => {        
     const existingUser = await Users.findOne({where : {id : req.body.userId}});
-    const empty = true;
+    let empty = true;
+    let ponovljentopik =false;
     if(req.body.name === '' ||req.body.userId === '' || req.body.description === '') 
         empty = false;
 
     if (existingUser) {
-        Topics.create({ userId: req.body.userId, name: req.body.name, description: req.body.description })
-        .then(rows => res.json(rows))
-        .catch(err => res.status(500).json(err));
+        ponovljentopik = true;
     }else{
         res.status(400).send({message: 'Error creating a topic, invalid user ID'});
     }
-    
+    Topics.create({ userId: req.body.userId, name: req.body.name, description: req.body.description })
+    .then(rows => res.json(rows))
+    .catch(err => res.status(500).json(err));
 });
 
 tp.put('/topics/:id', async(req, res) => {
 
     const existingUser = await Users.findOne({where : {id : req.body.userId}});
-    const empty = true;
-
+    let empty = true;
+    let ponovljentopik =false;
     if(req.body.name === '' ||req.body.userId === '' || req.body.description === '') 
         empty = false;
 
     if (existingUser) {
-        Topics.findOne({where : {id : req.params.id}})
+       ponovljentopik = true;
+    }else{
+        res.status(400).send({message: 'Error creating a topic, invalid user ID'});
+    }
+     Topics.findOne({where : {id : req.params.id}})
         .then( tp => {
                tp.userId = req.body.userId;
                tp.name = req.body.name;
@@ -53,9 +58,6 @@ tp.put('/topics/:id', async(req, res) => {
         })
         .then( rows => res.json(rows))
         .catch(err => res.status(500).json(err));
-    }else{
-        res.status(400).send({message: 'Error creating a topic, invalid user ID'});
-    }
 });
 
 tp.delete('/topics/:id', (req, res) => {

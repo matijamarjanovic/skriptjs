@@ -23,7 +23,7 @@ ppst.post('/pinnedposts/', async(req, res) => {
 
     const existingPost = await Posts.findOne({where : {id : req.body.postId}});
     const existingUser = await Users.findOne({where : {id : req.body.userId}});
-    const empty = true;
+    let empty = true;
     if(req.body.postId === '' ||req.body.userId === '') 
         empty = false;
 
@@ -41,7 +41,7 @@ ppst.put('/pinnedposts/:id', async(req, res) => {
 
     const existingPost = await Posts.findOne({where : {id : req.body.postId}});
     const existingUser = await Users.findOne({where : {id : req.body.userId}});
-    const empty = true;
+    let empty = true;
     if(req.body.postId === '' ||req.body.userId === '') 
         empty = false;
 

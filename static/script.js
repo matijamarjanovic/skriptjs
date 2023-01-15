@@ -49,15 +49,9 @@ function init() {
                 })
                     .then(res => res.json())
                     .then(data => {
-                        if (data.message === "User already exists in the database!")
+                        if (data.message !== null )
                             alert(data.message);
-                        else if (data.message === 'Email already exists in the database!')
-                            alert(data.message);
-                        else if (data.message === 'Email not valid')
-                            alert(data.message);
-                        else if (data.message === 'Password has to be between 4 and 20 characters')
-                            alert(data.message);
-                        else
+                        else 
                             document.getElementById('usrLst').innerHTML += `<li>ID: ${data.id}, Name: ${data.name}, Email: ${data.email}, Password: ${data.password}</li>`;
     
                 });
@@ -101,9 +95,7 @@ function init() {
                 })
                     .then(res => res.json())
                     .then(data => {
-                        if (data.message === 'Please fill all the fields!' )
-                            alert(data.message);
-                        else if (data.message === 'Error creating a post, invalid user or topic ID')
+                        if (data.message !== null )
                             alert(data.message);
                         else 
                             document.getElementById('pstLst').innerHTML += `<li>ID: ${data.id}, Title: ${data.title}, Content: ${data.content}, topicId: ${data.topicId}, userId: ${data.userId}</li>`;
@@ -147,11 +139,9 @@ function init() {
                 })
                     .then(res => res.json())
                     .then(data => {
-                        if(data.message ==='Error creating a comment, invalid user or post ID')
+                        if (data.message !== null )
                             alert(data.message);
-                        else if (data.message ==='Please fill all the fields!')
-                            alert(data.message);
-                        else
+                        else 
                             document.getElementById('cmtLst').innerHTML += `<li>ID: ${data.id}, userId: ${data.userId}, postId: ${data.postId}, Content: ${data.content}</li>`;
     
                 });
@@ -193,11 +183,9 @@ function init() {
                     .then(res => res.json())
                     .then(data => {
                         
-                        if (data.message === 'Error creating an interest, invalid user or topic ID')
+                        if (data.message !== null )
                             alert(data.message);
-                        else if (data.message ==='Please fill all the fields!')
-                            alert(data.message);
-                        else
+                        else 
                             document.getElementById('intrLst').innerHTML += `<li>ID: ${data.id}, topicId: ${data.topicId}, userId: ${data.userId}</li>`;
     
                 });
@@ -237,11 +225,9 @@ function init() {
                 })
                     .then(res => res.json())
                     .then(data => {
-                        if (data.message === 'Error creating a liked post, invalid user or post ID')
+                        if (data.message !== null )
                             alert(data.message);
-                        else if (data.message === 'Please fill all the fields!')
-                            alert(data.message);
-                        else
+                        else 
                         document.getElementById('lpstLst').innerHTML += `<li>ID: ${data.id}, postId: ${data.postId}, userId: ${data.userId}</li>`;
         
                 });
@@ -282,11 +268,9 @@ function init() {
                 })
                     .then(res => res.json())
                     .then(data => {
-                        if (data.message === 'Please fill all the fields!')
+                        if (data.message !== null )
                             alert(data.message);
-                        else if (data.message === 'Error creating a like, invalid user or post ID')
-                            alert(data.message);
-                        else
+                        else 
                         document.getElementById('lkLst').innerHTML += `<li>ID: ${data.id}, postId: ${data.postId}, userId: ${data.userId}</li>`;
         
                 });
@@ -329,11 +313,9 @@ function init() {
                 })
                     .then(res => res.json())
                     .then(data => {
-                        if (data.message === 'Please fill all the fields!')
+                        if (data.message !== null )
                             alert(data.message);
-                        else if (data.message === 'Error creating a notification, invalid post ID or notification is not written correctly.')
-                            alert(data.message);
-                        else
+                        else 
                         document.getElementById('notifLst').innerHTML += `<li>ID: ${data.id}, postId: ${data.postId}, notifType: ${data.notifType}, Content: ${data.content}</li>`;
         
                 });
@@ -376,11 +358,9 @@ function init() {
                 })
                     .then(res => res.json())
                     .then(data => {
-                        if (data.message === 'Please fill all the fields!')
+                        if (data.message !== null )
                             alert(data.message);
-                        else if (data.message === 'Error creating a topic, invalid user ID')
-                            alert(data.message);
-                        else
+                        else 
                         document.getElementById('tpLst').innerHTML += `<li>ID: ${data.id}, Name: ${data.name}, userId: ${data.userId}, Description: ${data.description}</li>`;
         
                 });
@@ -420,11 +400,9 @@ function init() {
                 })
                     .then(res => res.json())
                     .then(data => {
-                        if (data.message === 'Please fill all the fields!')
+                        if (data.message !== null )
                             alert(data.message);
-                        else if (data.message === 'Error creating a pinned post, invalid user or post ID')
-                            alert(data.message);
-                        else
+                        else 
                         document.getElementById('ppstLst').innerHTML += `<li>ID: ${data.id}, postId: ${data.postId}, userId: ${data.userId}</li>`;
         
                 });
@@ -464,9 +442,9 @@ function init() {
                     })
                         .then(res => res.json())
                         .then(data => {
-                             if (data.message === 'Error creating a usernotification, invalid user or notification ID')
+                            if (data.message !== null )
                                 alert(data.message);
-                            else
+                            else 
                             document.getElementById('unLst').innerHTML += `<li>ID: ${data.id}, notificationId: ${data.notificationId}, userId: ${data.userId}</li>`;
             
                     });

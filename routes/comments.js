@@ -23,30 +23,38 @@ const { sequelize , Users, Posts, Likes, Comments, Interests, Topics,
 
     const existingPost = await Posts.findOne({where : {id : req.body.postId}});
     const existingUser = await Users.findOne({where : {id : req.body.userId}});
-    const empty = true;
+    let empty = true;
+    let ponovljenkomentar = false;
+
     if(req.body.postId === '' ||req.body.userId === '' || req.body.content === '') 
         empty = false;
 
     if (existingPost && existingUser) {
-        Comments.create({ postId: req.body.postId, userId: req.body.userId, content: req.body.content})
-         .then(rows => res.json(rows))
-         .catch(err => res.status(500).json(err));
+        ponovljenkomentar = true;
     }else{
         res.status(400).send({message: 'Error creating a comment, invalid user or post ID'});
     }
-    
+    Comments.create({ postId: req.body.postId, userId: req.body.userId, content: req.body.content})
+         .then(rows => res.json(rows))
+         .catch(err => res.status(500).json(err));
  });
  
  cmt.put('/comments/:id', async (req, res) => {
 
     const existingPost = await Posts.findOne({where : {id : req.body.postId}});
     const existingUser = await Users.findOne({where : {id : req.body.userId}});
-    const empty = true;
+    const ponovljenkomentar = false;
+    let empty = true;
     if(req.body.postId === '' ||req.body.userId === '' || req.body.content === '') 
         empty = false;
 
     if (existingPost && existingUser) {
-        Comments.findOne({where : {id : req.params.id}})
+        ponovljenkomentar = true;
+    }else{
+        res.status(400).send({message: 'Error creating a comment, invalid user or post ID'});
+    }
+
+    Comments.findOne({where : {id : req.params.id}})
         .then( cmt => {
             cmt.postId = req.body.postId;
             cmt.userId = req.body.userId;
@@ -56,10 +64,6 @@ const { sequelize , Users, Posts, Likes, Comments, Interests, Topics,
         })
         .then( rows => res.json(rows))
         .catch(err => res.status(500).json(err));
-    }else{
-        res.status(400).send({message: 'Error creating a comment, invalid user or post ID'});
-    }
-    
  });
  
  cmt.delete('/comments/:id', (req, res) => {
