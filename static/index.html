@@ -71,32 +71,6 @@
         <div class="container">
             <div class="row">
                 <div class="col">
-                    <form method="post" action="/api/comments">
-                        <div class="mb-3">
-                            <label for="postId" class="form-label">postId</label>
-                            <input type="text" class="form-control" id="cmtpostId" name="postId">
-                        </div>
-                        <div class="mb-3">
-                            <label for="userId" class="form-label">userId</label>
-                            <input type="text" class="form-control" id="cmtuserId" name="userId">
-                        </div>
-                        <div class="mb-3">
-                            <label for="content" class="form-label">Content</label>
-                            <textarea class="form-control" id="cmtcontent" name="content" rows="3"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary" id="cmtBtn">Submit</button>
-                    </form>
-                </div>
-                <div class="col-6">
-                    <h2>Comments: (ne radi post)</h2>
-                    <ul id="cmtLst"></ul>
-                </div>
-            </div>
-        </div>
-        <hr>
-        <div class="container">
-            <div class="row">
-                <div class="col">
                     <form method="post" action="/api/interests">
                         <div class="mb-3">
                             <label for="topicId" class="form-label">topicId</label>
@@ -252,6 +226,32 @@
                 <div class="col-6">
                     <h2>UsersNotifications:</h2>
                     <ul id="unLst"></ul>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <form method="post" action="/api/comments">
+                        <div class="mb-3">
+                            <label for="postId" class="form-label">postId</label>
+                            <input type="text" class="form-control" id="cmtpostId" name="postId">
+                        </div>
+                        <div class="mb-3">
+                            <label for="userId" class="form-label">userId</label>
+                            <input type="text" class="form-control" id="cmtuserId" name="userId">
+                        </div>
+                        <div class="mb-3">
+                            <label for="content" class="form-label">Content</label>
+                            <textarea class="form-control" id="cmtcontent" name="content" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="cmtBtn">Submit</button>
+                    </form>
+                </div>
+                <div class="col-6">
+                    <h2>Comments: (ne radi rest api)</h2>
+                    <ul id="cmtLst"></ul>
                 </div>
             </div>
         </div>

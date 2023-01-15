@@ -32,6 +32,11 @@ module.exports = {
             },
           isAlphanumeric: { msg: 'Must be alphanumeric' }
         }
+      },    
+      admin: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
       },
       createdAt: {
         allowNull: false,

@@ -40,7 +40,7 @@ usr.post('/users/', async (req, res) => {
     }else if(existingUser2){
         return res.status(400).send({message: 'Email already exists in the database!'});
     }else{
-        Users.create({ name: req.body.name, email: req.body.email, password: req.body.password})
+        Users.create({ name: req.body.name, email: req.body.email, password: req.body.password, admin: req.body.admin})
             .then(rows => res.json(rows))
             .catch(err => res.status(500).json(err));
     }
@@ -72,7 +72,8 @@ usr.put('/users/:id', async (req, res) => {
             usr.name = req.body.name;
             usr.email = req.body.email;
             usr.password = req.body.password;
-
+            usr.admin = req.body.admin;
+            
             usr.save();
         })
         .then( rows => res.json(rows))

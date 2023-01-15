@@ -35,15 +35,6 @@ app.get('/', (req, res) =>{
     res.send('index.html');
 });
 
-app.get('/register', (req, res) =>{
-    res.send('register.html');
-});
-
-app.get('/login', (req, res) =>{
-    res.send('login.html');
-});
-
-
-app.listen({ port: 7070 }, async() => {
+app.listen({ port: 8080 }, async() => {
     await sequelize.authenticate();
 });

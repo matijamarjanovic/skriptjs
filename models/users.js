@@ -47,6 +47,11 @@ module.exports = (sequelize, DataTypes) => {
           },
         isAlphanumeric: { msg: 'Must be alphanumeric' }
       }
+    }, 
+    admin: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
     }
   }, {
     sequelize,
