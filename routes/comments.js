@@ -2,6 +2,7 @@ const { sequelize , Users, Posts, Likes, Comments, Interests, Topics,
     Notifications, UsersNotifications, PinnedPosts, LikedPosts } = require('../models');
  
  const express = require('express');
+const { INTEGER } = require('sequelize');
  const cmt = express.Router();
  cmt.use(express.json());
  cmt.use(express.urlencoded({ extended: true }));
@@ -24,37 +25,39 @@ const { sequelize , Users, Posts, Likes, Comments, Interests, Topics,
     const existingPost = await Posts.findOne({where : {id : req.body.postId}});
     const existingUser = await Users.findOne({where : {id : req.body.userId}});
     let empty = true;
-    let ponovljenkomentar = false;
+    let goodInt = true;
+
+    if (!Number.isInteger(req.body.postId) || !Number.isInteger(req.body.userId))
+        goodInt = false;
 
     if(req.body.postId === '' ||req.body.userId === '' || req.body.content === '') 
         empty = false;
 
-    if (existingPost && existingUser) {
-        ponovljenkomentar = true;
-    }else{
-        res.status(400).send({message: 'Error creating a comment, invalid user or post ID'});
-    }
-    Comments.create({ postId: req.body.postId, userId: req.body.userId, content: req.body.content})
+    if (goodInt)  {
+        Comments.create({ postId: req.body.postId, userId: req.body.userId, content: req.body.content})
          .then(rows => res.json(rows))
          .catch(err => res.status(500).json(err));
+    }else if (!goodInt){
+        res.status(400).send({message: 'Use exclusively integers for IDs'});
+    }
+    
  });
  
  cmt.put('/comments/:id', async (req, res) => {
 
     const existingPost = await Posts.findOne({where : {id : req.body.postId}});
     const existingUser = await Users.findOne({where : {id : req.body.userId}});
-    const ponovljenkomentar = false;
     let empty = true;
+    let goodInt = true;
+
+    if (!Number.isInteger(req.body.postId) || !Number.isInteger(req.body.userId))
+        goodInt = false;
+
     if(req.body.postId === '' ||req.body.userId === '' || req.body.content === '') 
         empty = false;
 
-    if (existingPost && existingUser) {
-        ponovljenkomentar = true;
-    }else{
-        res.status(400).send({message: 'Error creating a comment, invalid user or post ID'});
-    }
-
-    Comments.findOne({where : {id : req.params.id}})
+    if (goodInt)  {
+        Comments.findOne({where : {id : req.params.id}})
         .then( cmt => {
             cmt.postId = req.body.postId;
             cmt.userId = req.body.userId;
@@ -64,6 +67,11 @@ const { sequelize , Users, Posts, Likes, Comments, Interests, Topics,
         })
         .then( rows => res.json(rows))
         .catch(err => res.status(500).json(err));
+    }else if (!goodInt){
+        res.status(400).send({message: 'Use integers for IDs'});
+    }
+
+   
  });
  
  cmt.delete('/comments/:id', (req, res) => {

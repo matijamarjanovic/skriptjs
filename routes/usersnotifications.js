@@ -26,12 +26,18 @@ usrsnotif.post('/usersnotifications/', async(req, res) => {
     
     if(req.body.notificationId === '' ||req.body.userId === '')
     empty = false;
-    
-    if (existingNotification && existingUser) {
-        Notifications.create({ userId: req.body.userId, notificationId: req.body.notificationId })
+    let goodInt = true;
+
+    if (!Number.isInteger(req.body.notificationId) || !Number.isInteger(req.body.userId))
+        goodInt = false;
+
+    if (existingNotification && existingUser&& goodInt) {
+        UsersNotifications.create({ userId: req.body.userId, notificationId: req.body.notificationId })
         .then(rows => res.json(rows))
         .catch(err => res.status(500).json(err));
 
+    }else if(!goodInt){
+        res.status(400).send({message: 'Use integers for IDs'});
     }else{
         res.status(400).send({message: 'Error creating a usernotification, invalid user or notification ID'});
     }
@@ -39,14 +45,19 @@ usrsnotif.post('/usersnotifications/', async(req, res) => {
 
 usrsnotif.put('/usersnotifications/:id', async(req, res) => {
 
+
     const existingNotification = await Notifications.findOne({where : {id : req.body.notificationId}});
     const existingUser = await Users.findOne({where : {id : req.body.userId}});
     const empty = true;
-
+    
     if(req.body.notificationId === '' ||req.body.userId === '')
-        empty = false;
+    empty = false;
+    let goodInt = true;
 
-    if (existingNotification && existingUser && !empty) {
+    if (!Number.isInteger(req.body.notificationId) || !Number.isInteger(req.body.userId))
+        goodInt = false;
+
+    if (existingNotification && existingUser&& goodInt) {
         UsersNotifications.findOne({where : {id : req.params.id}})
         .then( usrsnotif => {
                usrsnotif.userId = req.body.userId;
@@ -56,8 +67,10 @@ usrsnotif.put('/usersnotifications/:id', async(req, res) => {
         })
         .then( rows => res.json(rows))
         .catch(err => res.status(500).json(err));
+    }else if(!goodInt){
+        res.status(400).send({message: 'Use integers for IDs'});
     }else{
-        res.status(400).send({message: 'Error updating a usernotification, invalid user or notification ID'});
+        res.status(400).send({message: 'Error creating a usernotification, invalid user or notification ID'});
     }
     
 });

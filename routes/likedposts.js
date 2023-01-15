@@ -24,14 +24,21 @@ const { sequelize , Users, Posts, Likes, Comments, Interests, Topics,
 
         const existingPost = await Posts.findOne({where : {id : req.body.postId}});
         const existingUser = await Users.findOne({where : {id : req.body.userId}});
-        const empty = true;
+        let empty = true;
         if(req.body.postId === '' ||req.body.userId === '') 
             empty = false;
+        
+        let goodInt = true;
+    
+        if (!Number.isInteger(req.body.postId) || !Number.isInteger(req.body.userId))
+            goodInt = false;
 
-        if (existingPost && existingUser) {
+        if (existingPost && existingUser && goodInt)  {
             LikedPosts.create({ userId: req.body.userId, postId: req.body.postId})
             .then(rows => res.json(rows))
             .catch(err => res.status(500).json(err));
+        }else if(!goodInt) {
+            res.status(400).send({message: 'Use exclusively integers for IDs'});
         }else{
             res.status(400).send({message: 'Error creating a liked post, invalid user or post ID'});
         }
@@ -40,13 +47,19 @@ const { sequelize , Users, Posts, Likes, Comments, Interests, Topics,
     
     lpst.put('/likedposts/:id', async(req, res) => {
 
+        
         const existingPost = await Posts.findOne({where : {id : req.body.postId}});
         const existingUser = await Users.findOne({where : {id : req.body.userId}});
-        const empty = true;
+        let empty = true;
         if(req.body.postId === '' ||req.body.userId === '') 
             empty = false;
+        
+        let goodInt = true;
+    
+        if (!Number.isInteger(req.body.postId) || !Number.isInteger(req.body.userId))
+            goodInt = false;
 
-        if (existingPost && existingUser) {
+        if (existingPost && existingUser && goodInt)  {
             LikedPosts.findOne({where : {id : req.params.id}})
             .then( lpst=> {
                 lpst.userId = req.body.userId;
@@ -56,10 +69,12 @@ const { sequelize , Users, Posts, Likes, Comments, Interests, Topics,
             })
             .then( rows => res.json(rows))
             .catch(err => res.status(500).json(err));
+        }else if(!goodInt) {
+            res.status(400).send({message: 'Use exclusively integers for IDs'});
         }else{
             res.status(400).send({message: 'Error creating a liked post, invalid user or post ID'});
         }
-
+       
     });
     
     lpst.delete('/likedposts/:id', (req, res) => {

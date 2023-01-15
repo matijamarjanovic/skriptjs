@@ -26,11 +26,18 @@ ppst.post('/pinnedposts/', async(req, res) => {
     let empty = true;
     if(req.body.postId === '' ||req.body.userId === '') 
         empty = false;
+    
+    let goodInt = true;
 
-    if (existingPost && existingUser){
-        PinnedPosts.create({ userId: req.body.userId, postId: req.body.postId })
+    if (!Number.isInteger(req.body.postId) || !Number.isInteger(req.body.userId))
+        goodInt = false;
+
+    if (existingPost && existingUser && goodInt)  {
+        PinnedPosts.create({ userId: req.body.userId, postId: req.body.postId})
         .then(rows => res.json(rows))
         .catch(err => res.status(500).json(err));
+    }else if(!goodInt) {
+        res.status(400).send({message: 'Use exclusively integers for IDs'});
     }else{
         res.status(400).send({message: 'Error creating a pinned post, invalid user or post ID'});
     }
@@ -44,8 +51,13 @@ ppst.put('/pinnedposts/:id', async(req, res) => {
     let empty = true;
     if(req.body.postId === '' ||req.body.userId === '') 
         empty = false;
+    
+    let goodInt = true;
 
-    if (existingPost && existingUser){
+    if (!Number.isInteger(req.body.postId) || !Number.isInteger(req.body.userId))
+        goodInt = false;
+
+    if (existingPost && existingUser && goodInt)  {
         PinnedPosts.findOne({where : {id : req.params.id}})
         .then( ppst => {
                ppst.userId = req.body.userId;
@@ -54,11 +66,11 @@ ppst.put('/pinnedposts/:id', async(req, res) => {
         })
         .then( rows => res.json(rows))
         .catch(err => res.status(500).json(err));
+    }else if(!goodInt) {
+        res.status(400).send({message: 'Use exclusively integers for IDs'});
     }else{
         res.status(400).send({message: 'Error creating a pinned post, invalid user or post ID'});
     }
-
-    
 });
 
 ppst.delete('/pinnedposts/:id', (req, res) => {

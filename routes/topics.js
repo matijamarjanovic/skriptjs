@@ -20,36 +20,37 @@ tp.get('/topics/:id', (req, res) => {
 });
 
 tp.post('/topics/', async(req, res) => {        
+   
     const existingUser = await Users.findOne({where : {id : req.body.userId}});
     let empty = true;
-    let ponovljentopik =false;
     if(req.body.name === '' ||req.body.userId === '' || req.body.description === '') 
         empty = false;
+    let goodInt = true;
 
-    if (existingUser) {
-        ponovljentopik = true;
+     if (!Number.isInteger(req.body.userId))
+        goodInt = false;
+    if (goodInt) {
+        Topics.create({ userId: req.body.userId, name: req.body.name, description: req.body.description })
+        .then(rows => res.json(rows))
+        .catch(err => res.status(500).json(err));    
     }else{
-        res.status(400).send({message: 'Error creating a topic, invalid user ID'});
-    }
-    Topics.create({ userId: req.body.userId, name: req.body.name, description: req.body.description })
-    .then(rows => res.json(rows))
-    .catch(err => res.status(500).json(err));
+        res.status(400).send({message: 'Use integers for IDs'});
+      }
+    
 });
 
 tp.put('/topics/:id', async(req, res) => {
 
     const existingUser = await Users.findOne({where : {id : req.body.userId}});
     let empty = true;
-    let ponovljentopik =false;
     if(req.body.name === '' ||req.body.userId === '' || req.body.description === '') 
         empty = false;
+    let goodInt = true;
 
-    if (existingUser) {
-       ponovljentopik = true;
-    }else{
-        res.status(400).send({message: 'Error creating a topic, invalid user ID'});
-    }
-     Topics.findOne({where : {id : req.params.id}})
+     if (!Number.isInteger(req.body.userId))
+        goodInt = false;
+    if (goodInt) {
+        Topics.findOne({where : {id : req.params.id}})
         .then( tp => {
                tp.userId = req.body.userId;
                tp.name = req.body.name;
@@ -57,7 +58,11 @@ tp.put('/topics/:id', async(req, res) => {
                tp.save();
         })
         .then( rows => res.json(rows))
-        .catch(err => res.status(500).json(err));
+        .catch(err => res.status(500).json(err));    }
+    else{
+        res.status(400).send({message: 'Use integers for IDs'});
+      }
+     
 });
 
 tp.delete('/topics/:id', (req, res) => {

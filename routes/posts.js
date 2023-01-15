@@ -22,23 +22,27 @@ const { sequelize , Users, Posts, Likes, Comments, Interests, Topics,
     
     pst.post('/posts/', async(req, res) => {
 
+        
         const existingTopic = await Topics.findOne({where : {id : req.body.topicId}});
         const existingUser = await Users.findOne({where : {id : req.body.userId}});
-        let empty = true;
-        let ponovljenpost = false;
+        const empty = true;
 
         if(req.body.userId === '' ||req.body.topicId === '' || req.body.title === '' || req.body.content === '')  
             empty = false;
 
-        if (existingUser && existingTopic){
-            ponovljenpost = true;
-        }else{
-            res.status(400).send({message: 'Error creating a post, invalid user or topic ID'});
+        let goodInt = true;
+
+        if (!Number.isInteger(req.body.topicId) || !Number.isInteger(req.body.userId))
+            goodInt = false;
+        
+        if (goodInt){
+            Posts.create({ userId: req.body.userId, topicId: req.body.topicId, title: req.body.title, content: req.body.content})
+            .then(rows => res.json(rows))
+            .catch(err => res.status(500).json(err));
+        }else if (!goodInt){
+            res.status(400).send({message: 'Use integers for IDs'});
         }
         
-        Posts.create({ userId: req.body.userId, topicId: req.body.topicId, title: req.body.title, content: req.body.content})
-        .then(rows => res.json(rows))
-        .catch(err => res.status(500).json(err));
        
     });
     
@@ -47,18 +51,17 @@ const { sequelize , Users, Posts, Likes, Comments, Interests, Topics,
         const existingTopic = await Topics.findOne({where : {id : req.body.topicId}});
         const existingUser = await Users.findOne({where : {id : req.body.userId}});
         const empty = true;
-        let ponovljenpost = false;
 
         if(req.body.userId === '' ||req.body.topicId === '' || req.body.title === '' || req.body.content === '')  
             empty = false;
 
-        if (existingUser && existingTopic){
-            ponovljenpost = true;
-        }else{
-            res.status(400).send({message: 'Error creating a post, invalid user or topic ID'});
-        }
+        let goodInt = true;
+
+        if (!Number.isInteger(req.body.topicId) || !Number.isInteger(req.body.userId))
+            goodInt = false;
         
-           Posts.findOne({where : {id : req.params.id}})
+        if (goodInt){
+            Posts.findOne({where : {id : req.params.id}})
             .then( pst=> {
                 pst.userId = req.body.userId;
                 pst.topicId = req.body.topicId;
@@ -69,6 +72,11 @@ const { sequelize , Users, Posts, Likes, Comments, Interests, Topics,
             })
             .then( rows => res.json(rows))
             .catch(err => res.status(500).json(err));
+        }else if (!goodInt){
+            res.status(400).send({message: 'Use integers for IDs'});
+        }
+        
+           
        
     });
     

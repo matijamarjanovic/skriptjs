@@ -23,30 +23,40 @@ lk.post('/likes/', async(req, res) => {
 
     const existingPost = await Posts.findOne({where : {id : req.body.postId}});
     const existingUser = await Users.findOne({where : {id : req.body.userId}});
-    const empty = true;
+    let empty = true;
     if(req.body.postId === '' ||req.body.userId === '') 
         empty = false;
+    
+    let goodInt = true;
 
-    if (existingPost && existingUser) {
-        Likes.create({ userId: req.body.userId, postId: req.body.postId })
+    if (!Number.isInteger(req.body.postId) || !Number.isInteger(req.body.userId))
+        goodInt = false;
+
+    if (existingPost && existingUser && goodInt)  {
+        Likes.create({ userId: req.body.userId, postId: req.body.postId})
         .then(rows => res.json(rows))
         .catch(err => res.status(500).json(err));
+    }else if(!goodInt) {
+        res.status(400).send({message: 'Use exclusively integers for IDs'});
     }else{
         res.status(400).send({message: 'Error creating a like, invalid user or post ID'});
     }
-    
 });
 
 lk.put('/likes/:id', async(req, res) => {
-
-    
-    const existingPost = await Posts.findOne({where : {id : req.body.postId}});
+  
+        const existingPost = await Posts.findOne({where : {id : req.body.postId}});
     const existingUser = await Users.findOne({where : {id : req.body.userId}});
-    const empty = true;
+    let empty = true;
     if(req.body.postId === '' ||req.body.userId === '') 
         empty = false;
+    
+    let goodInt = true;
 
-    if (existingPost && existingUser) {
+    if (!Number.isInteger(req.body.postId) || !Number.isInteger(req.body.userId))
+        goodInt = false;
+
+    if (existingPost && existingUser && goodInt)  {
         Likes.findOne({where : {id : req.params.id}})
         .then( lk => {
                lk.userId = req.body.userId;
@@ -55,10 +65,11 @@ lk.put('/likes/:id', async(req, res) => {
         })
         .then( rows => res.json(rows))
         .catch(err => res.status(500).json(err));
+    }else if(!goodInt) {
+        res.status(400).send({message: 'Use exclusively integers for IDs'});
     }else{
         res.status(400).send({message: 'Error creating a like, invalid user or post ID'});
     }
-    
     
 });
 

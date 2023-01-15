@@ -27,14 +27,20 @@ notif.post('/notifications/', async(req, res) => {
     if(req.body.content === '' ||req.body.notifType === '' || req.body.postId === '') 
         empty = false;
 
+    let goodInt = true;
+    if (!Number.isInteger(req.body.postId))
+         goodInt = false;
+
     if ((req.body.content === 'Your post has a new comment.' && req.body.notifType === 'comment') ||
             (req.body.content === 'Your post has a new like.' && req.body.notifType === 'like'))
-            goodNotif => true;
+            goodNotif = true;
     
-    if (goodNotif){
+    if (goodNotif && goodInt){
         Notifications.create({ postId: req.body.postId, notifType: req.body.notifType,  content: req.body.content })
         .then(rows => res.json(rows))
         .catch(err => res.status(500).json(err));
+    }else if(!goodInt) {
+        res.status(400).send({message: 'Use exclusively integers for IDs'});
     }else{
         res.status(400).send({message: 'Error creating a notification, invalid post ID or notification is not written correctly.'});
     }
@@ -48,11 +54,15 @@ notif.put('/notifications/:id', async(req, res) => {
     if(req.body.content === '' ||req.body.notifType === '' || req.body.postId === '') 
         empty = false;
 
+    let goodInt = true;
+    if (!Number.isInteger(req.body.postId))
+         goodInt = false;
+
     if ((req.body.content === 'Your post has a new comment.' && req.body.notifType === 'comment') ||
             (req.body.content === 'Your post has a new like.' && req.body.notifType === 'like'))
             goodNotif = true;
     
-    if (goodNotif){
+    if (goodNotif && goodInt){
         Notifications.findOne({where : {id : req.params.id}})
         .then( notif => {
                 notif.notifType = req.body.notifType;;
@@ -63,8 +73,10 @@ notif.put('/notifications/:id', async(req, res) => {
         })
         .then( rows => res.json(rows))
         .catch(err => res.status(500).json(err));
+    }else if(!goodInt) {
+        res.status(400).send({message: 'Use exclusively integers for IDs'});
     }else{
-        res.status(400).send({message: 'Error creating a notification, invalid post ID or notification is not written correctly.'});
+        res.status(400).send({message: 'Error updating a notification, invalid post ID or notification is not written correctly.'});
     }
 
 
