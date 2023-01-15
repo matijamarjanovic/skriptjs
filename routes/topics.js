@@ -8,16 +8,25 @@ tp.use(express.urlencoded({ extended: true }));
 
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
+const joi = require('joi');
+
+const validation = joi.object({
+    name: joi.string().required(),
+    userId: joi.number().integer().required(),
+    description: joi.string().required()
+.default([]),
+   is_active: joi.boolean().default(true),
+});
 
 function authToken(req, res, next) {
-    const authHeader = req.headers['authorization'];
+    const authHeader = req.headers['Authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
 
-    if (token === null) return res.redirect(301, '/login');
+    if (token === null) return res.status(401).json({message : 'Error'});
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, usr) => {
-        if (err) return res.redirect(301, '/login');
+        if (err) return res.status(403).json({message : 'Access Denied'});
 
         req.user = usr;
 
@@ -25,65 +34,65 @@ function authToken(req, res, next) {
     });
 }
 
-tp.use(authToken);
-
+//tp.use(authToken);
 tp.get('/topics', (req, res) => {
     Topics.findAll()
         .then(rows => res.json(rows))
-        .catch(err => res.status(500).json(err));
+        .catch(err => res.status(500).send({message : 'Server internal error'}));
 });
 
 
 tp.get('/topics/:id', (req, res) => {
     Topics.findOne({where : {id : req.params.id}})
         .then(rows => res.json(rows))
-        .catch(err => res.status(500).json(err));
+        .catch(err => res.status(500).send({message : 'Server internal error'}));
 });
 
 tp.post('/topics/', async(req, res) => {        
-   
-    const existingUser = await Users.findOne({where : {id : req.body.userId}});
-    let empty = true;
-    if(req.body.name === '' ||req.body.userId === '' || req.body.description === '') 
-        empty = false;
-    let goodInt = true;
 
-     if (!Number.isInteger(req.body.userId))
-        goodInt = false;
-    if (goodInt) {
-        Topics.create({ userId: req.body.userId, name: req.body.name, description: req.body.description })
-        .then(rows => res.json(rows))
-        .catch(err => res.status(500).json(err));    
-    }else{
-        res.status(400).send({message: 'Use integers for IDs'});
-      }
+            const payload = {
+                name : req.body.name,
+                userId: req.body.userId,
+                description: req.body.description
+            };
+            const {err} = validation.validate(payload);
+        
+            if (err)  {
+                res.status(400).send({message : 'Invalid data'})
+            }else{
+                Topics.create({ userId: req.body.userId, name: req.body.name, description: req.body.description })
+                .then(rows => res.json(rows))
+                .catch(err => res.status(500).send({message : 'Server internal error'}));    
+    
+            }
+        
     
 });
 
 tp.put('/topics/:id', async(req, res) => {
 
-    const existingUser = await Users.findOne({where : {id : req.body.userId}});
-    let empty = true;
-    if(req.body.name === '' ||req.body.userId === '' || req.body.description === '') 
-        empty = false;
-    let goodInt = true;
+    const payload = {
+        name : req.body.name,
+        userId: req.body.userId,
+        description: req.body.description
+    };
+    const {err} = validation.validate(payload);
 
-     if (!Number.isInteger(req.body.userId))
-        goodInt = false;
-    if (goodInt) {
+    if (err)  {
+        res.status(400).send({message : 'Invalid data'})
+    }else {
         Topics.findOne({where : {id : req.params.id}})
         .then( tp => {
-               tp.userId = req.body.userId;
-               tp.name = req.body.name;
-               tp.description = req.body.description;
-               tp.save();
+            tp.userId = req.body.userId;
+            tp.name = req.body.name;
+            tp.description = req.body.description;
+            tp.save();
         })
         .then( rows => res.json(rows))
-        .catch(err => res.status(500).json(err));    }
-    else{
-        res.status(400).send({message: 'Use integers for IDs'});
-      }
-     
+        .catch(err => res.status(500).send({message : 'Server internal error'}));
+
+    }
+  
 });
 
 tp.delete('/topics/:id', (req, res) => {
@@ -92,7 +101,7 @@ tp.delete('/topics/:id', (req, res) => {
         tp.destroy();
     })
     .then( rows => res.json(rows))
-    .catch(err => res.status(500).json(err));;
+    .catch(err => res.status(500).send({message : 'Server internal error'}));;
 });
 
 module.exports = tp;

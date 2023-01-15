@@ -13,8 +13,8 @@ const lpsts = require('./routes/likedposts.js');
 const ppsts = require('./routes/pinnedposts.js');
 
 const { sequelize } = require('./models');
-const { resourceLimits } = require('worker_threads');
-
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 const app = express();
 
@@ -31,9 +31,48 @@ app.use('/api', ppsts);
 
 app.use(express.static(path.join(__dirname, 'static')));
 
-app.get('/', (req, res) =>{
-    res.send('index.html');
+
+function getCookies(req){
+    if (req.headers.cookie == null) return {};
+
+    const rawCookie = req.headers.cookie.split('; ');
+    const parsedCookies = {};
+
+    rawCookie.forEach(el => {
+        const tmp = el.split('=');
+        parsedCookies[tmp[0]] = tmp[1];
+    });
+
+    return parsedCookies;
+}
+
+function authToken(req, res, next) {
+    const cookies = getCookies(req);
+    const token = cookies['token'];
+
+    if (token === null) return res.redirect(301, '/login');
+
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, usr) => {
+        if (err) return res.redirect(301, '/login');
+
+        req.user = usr;
+
+        next();
+    });
+}
+
+app.get('/', authToken, (req, res) =>{
+    res.sendFile('index.html', {root: './static'});
 });
+
+app.get('/login', (req, res) => {
+    res.sendFile('login.html', { root: './static' });
+});
+
+app.get('/register',  (req, res) => {
+  res.sendFile('register.html', { root: './static' });
+});
+
 
 app.listen({ port: 8080 }, async() => {
     await sequelize.authenticate();

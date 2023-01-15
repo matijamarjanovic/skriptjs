@@ -10,15 +10,23 @@ const { sequelize , Users, Posts, Likes, Comments, Interests, Topics,
     require('dotenv').config();
 const jwt = require('jsonwebtoken');
 
+const joi = require('joi');
+
+const validation = joi.object({
+    topicId: joi.number().integer().required(),
+    userId: joi.number().integer().required()
+.default([]),
+   is_active: joi.boolean().default(true),
+});
 
 function authToken(req, res, next) {
-    const authHeader = req.headers['authorization'];
+    const authHeader = req.headers['Authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
-    if (token === null) return res.redirect(301, '/login');
+    if (token === null) return res.status(401).json({message : 'Error'});
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, usr) => {
-        if (err) return res.redirect(301, '/login');
+        if (err) return res.status(403).json({message : 'Access Denied'});
 
         req.user = usr;
 
@@ -26,19 +34,20 @@ function authToken(req, res, next) {
     });
 }
 
-intrst.use(authToken);
+//intrst.use(authToken);
     
+  
     intrst.get('/interests', (req, res) => {
        Interests.findAll()
             .then(rows => res.json(rows))
-            .catch(err => res.status(500).json(err));
+            .catch(err => res.status(500).send({message : 'Server internal error'}));
     });
     
     
     intrst.get('/interests/:id', (req, res) => {
        Interests.findOne({where : {id : req.params.id}})
             .then(rows => res.json(rows))
-            .catch(err => res.status(500).json(err));
+            .catch(err => res.status(500).send({message : 'Server internal error'}));
     });
     
     intrst.post('/interests/', async(req, res) => {
@@ -46,42 +55,45 @@ intrst.use(authToken);
     const existingTopic = await Topics.findOne({where : {id : req.body.topicId}});
     const existingUser = await Users.findOne({where : {id : req.body.userId}});
     
-    let empty = true;
-    if(req.body.topicId === '' ||req.body.userId === '') 
-        empty = false;
+    const payload = {
+        topicId : req.body.topicId,
+        userId: req.body.userId,
+        content: req.body.content
+    };
+    const {err} = validation.validate(payload);
 
-    let goodInt = true;
-
-    if (!Number.isInteger(req.body.postId) || !Number.isInteger(req.body.userId))
-        goodInt = false;
-
-    if (existingTopic && existingUser && goodInt) {
-        Interests.create({ userId: req.body.userId, topicId: req.body.topicId})
-            .then(rows => res.json(rows))
-            .catch(err => res.status(500).json(err));
-    }else if(!goodInt) {
-        res.status(400).send({message: 'Use exclusively integers for IDs'});
+    if (err) {
+        res.status(400).send({message : 'Invalid data'})
     }else{
-        res.status(400).send({message: 'Error creating an interest, invalid user or topic ID'});
+        if (existingTopic && existingUser) {
+            Interests.create({ userId: req.body.userId, topicId: req.body.topicId})
+                .then(rows => res.json(rows))
+                .catch(err => res.status(500).send({message : 'Server internal error'}));
+        }else{
+            res.status(400).send({message: 'Error creating an interest, invalid user or topic ID'});
+        }
     }
+    
        
     });
     
     intrst.put('/interests/:id', async(req, res) => {
 
-        const existingTopic = await Topics.findOne({where : {id : req.body.topicId}});
-        const existingUser = await Users.findOne({where : {id : req.body.userId}});
         
-        let empty = true;
-        if(req.body.topicId === '' ||req.body.userId === '') 
-            empty = false;
+    const existingTopic = await Topics.findOne({where : {id : req.body.topicId}});
+    const existingUser = await Users.findOne({where : {id : req.body.userId}});
     
-        let goodInt = true;
-    
-        if (!Number.isInteger(req.body.topicId) || !Number.isInteger(req.body.userId))
-            goodInt = false;
-    
-        if (existingTopic && existingUser && goodInt) {
+    const payload = {
+        topicId : req.body.topicId,
+        userId: req.body.userId,
+        content: req.body.content
+    };
+    const {err} = validation.validate(payload);
+
+    if (err) {
+        res.status(400).send({message : 'Invalid data'})
+    }else{
+        if (existingTopic && existingUser) {
             Interests.findOne({where : {id : req.params.id}})
             .then( intrst=> {
                 intrst.userId = req.body.userId;
@@ -90,12 +102,13 @@ intrst.use(authToken);
                 intrst.save();
             })
             .then( rows => res.json(rows))
-            .catch(err => res.status(500).json(err));
-        }else if(!goodInt) {
-            res.status(400).send({message: 'Use exclusively integers for IDs'});
+            .catch(err => res.status(500).send({message : 'Server internal error'}));
         }else{
-            res.status(400).send({message: 'Error updating an interest, invalid user or topic ID'});
+            res.status(400).send({message: 'Error creating an interest, invalid user or topic ID'});
         }
+    }
+    
+   
     });
     
     intrst.delete('/interests/:id', (req, res) => {
@@ -104,7 +117,7 @@ intrst.use(authToken);
             intrst.destroy();
         })
         .then( rows => res.json(rows))
-        .catch(err => res.status(500).json(err));;
+        .catch(err => res.status(500).send({message : 'Server internal error'}));;
     });
     
     module.exports = intrst;

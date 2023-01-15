@@ -1,24 +1,21 @@
-const e = require("express");
-const { sequelize , Users, Posts, Likes, Comments, Interests, Topics,
-    Notifications, UsersNotifications, PinnedPosts, LikedPosts } = require('../models');
- 
-const joi = require('joi');
-const signupSchema = joi.object({
-    email: joi.string().email().required(),
-    password: joi.string().min(4).max(20).required(),
-    name: joi.string().required()
-})
-
 function init() {
 
+    const cookies = document.cookie.split('=');
+    const token = cookies[cookies.length - 1];
+
+
     // Users ----------------------------------------------------------------
-    fetch('http://localhost:8080/api/users')
+    fetch('http://127.0.0.1:8080/api/users', {
+        headers:{
+            'Authorization': `Bearer ${token}`
+        }
+    })
         .then(res => res.json())
         .then(data => {
             const lst = document.getElementById('usrLst');
 
             data.forEach( el => {
-                lst.innerHTML += `<li>ID: ${el.id}, Name: ${el.name}, Email: ${el.email}, Password: ${el.password}</li>`;
+                lst.innerHTML += `<li>ID: ${el.id}, Name: ${el.name}, Email: ${el.email}, Password: ${el.password}, Admin: ${data.admin}</li>`;
             })
         });
 
@@ -27,13 +24,15 @@ function init() {
             const data = {
                 name: document.getElementById('userName').value,
                 email: document.getElementById('email').value,
-                password: document.getElementById('password').value
+                password: document.getElementById('password').value,
+                admin: document.getElementById('admin').checked
                 
             }
             console.log(data);
             document.getElementById('userName').value = '';
             document.getElementById('email').value = '';
             document.getElementById('password').value = '';
+            document.getElementById('admin').checked = false;
               
             if( data.name === '' || data.email === '' || data.password === ''){
                 alert('Please fill out all the fields.');
@@ -41,25 +40,31 @@ function init() {
                 alert('Please enter valid data.');
             }else{
 
-                fetch('http://localhost:8080/api/users', {
+                fetch('http://127.0.0.1:8080/api/users', {
                     method: 'post',
-                    headers: { 'Content-Type': 'application/json'},
+                    headers: {
+                        'Content-Type': 'application/json', 
+                        'Authorization': `Bearer ${token}`
+                       },
                     body: JSON.stringify(data)
-                    
                 })
                     .then(res => res.json())
                     .then(data => {
-                        if (data.message !== null )
+                        if (data.message !== null && data.message !== undefined )
                             alert(data.message);
                         else 
-                            document.getElementById('usrLst').innerHTML += `<li>ID: ${data.id}, Name: ${data.name}, Email: ${data.email}, Password: ${data.password}</li>`;
+                            document.getElementById('usrLst').innerHTML += `<li>ID: ${data.id}, Name: ${data.name}, Email: ${data.email}, Password: ${data.password}, Admin: ${data.admin}</li>`;
     
                 });
             }
         });
 
         //Posts --------------------------------------------------------
-        fetch('http://localhost:8080/api/posts')
+        fetch('http://127.0.0.1:8080/api/posts', {
+            headers:{
+                'Authorization': `Bearer ${token}`
+            }
+        })
         .then(res => res.json())
         .then(data => {
             const lst = document.getElementById('pstLst');
@@ -87,15 +92,17 @@ function init() {
             if (data.topicId == '' || data.userId === ''|| data.title === '' || data.content === '') {
                 alert('Please fill out all the fields.');
             }else{
-                fetch('http://localhost:8080/api/posts', {
+                fetch('http://127.0.0.1:8080/api/posts', {
                     method: 'post',
-                    headers: { 'Content-Type': 'application/json'},
+                    headers: {
+                        'Content-Type': 'application/json', 
+                        'Authorization': `Bearer ${token}`
+                       },
                     body: JSON.stringify(data)
-                    
                 })
                     .then(res => res.json())
                     .then(data => {
-                        if (data.message !== null )
+                        if (data.message !== null && data.message !== undefined )
                             alert(data.message);
                         else 
                             document.getElementById('pstLst').innerHTML += `<li>ID: ${data.id}, Title: ${data.title}, Content: ${data.content}, topicId: ${data.topicId}, userId: ${data.userId}</li>`;
@@ -105,7 +112,11 @@ function init() {
         });
 
         //Comments --------------------------------------------------------
-        fetch('http://localhost:8080/api/comments')
+        fetch('http://127.0.0.1:8080/api/comments', {
+            headers:{
+                'Authorization': `Bearer ${token}`
+            }
+        })
         .then(res => res.json())
         .then(data => {
             const lst = document.getElementById('cmtLst');
@@ -131,15 +142,18 @@ function init() {
             if (data.topicId == '' || data.userId === '' || data.content === '') {
                 alert('Please fill out all the fields.');
             }else{
-                fetch('http://localhost:8080/api/comments', {
+                fetch('http://127.0.0.1:8080/api/comments', {
                     method: 'post',
-                    headers: { 'Content-Type': 'application/json'},
+                    headers: {
+                        'Content-Type': 'application/json', 
+                        'Authorization': `Bearer ${token}`
+                       },
                     body: JSON.stringify(data)
                     
                 })
                     .then(res => res.json())
                     .then(data => {
-                        if (data.message !== null )
+                        if (data.message !== null && data.message !== undefined)
                             alert(data.message);
                         else 
                             document.getElementById('cmtLst').innerHTML += `<li>ID: ${data.id}, userId: ${data.userId}, postId: ${data.postId}, Content: ${data.content}</li>`;
@@ -149,7 +163,11 @@ function init() {
         });
 
         //Interests --------------------------------------------------------
-        fetch('http://localhost:8080/api/interests')
+        fetch('http://127.0.0.1:8080/api/interests', {
+            headers:{
+                'Authorization': `Bearer ${token}`
+            }
+        })
         .then(res => res.json())
         .then(data => {
             const lst = document.getElementById('intrLst');
@@ -174,16 +192,19 @@ function init() {
             if (data.topicId == '' || data.userId === '') {
                 alert('Please fill out all the fields.');
             }else{
-                fetch('http://localhost:8080/api/interests', {
+                fetch('http://127.0.0.1:8080/api/interests', {
                     method: 'post',
-                    headers: { 'Content-Type': 'application/json'},
+                    headers: {
+                        'Content-Type': 'application/json', 
+                        'Authorization': `Bearer ${token}`
+                       },
                     body: JSON.stringify(data)
                     
                 })
                     .then(res => res.json())
                     .then(data => {
                         
-                        if (data.message !== null )
+                        if (data.message !== null && data.message !== undefined )
                             alert(data.message);
                         else 
                             document.getElementById('intrLst').innerHTML += `<li>ID: ${data.id}, topicId: ${data.topicId}, userId: ${data.userId}</li>`;
@@ -193,7 +214,11 @@ function init() {
         });
 
          //LikedPosts --------------------------------------------------------
-         fetch('http://localhost:8080/api/likedposts')
+         fetch('http://127.0.0.1:8080/api/likedposts', {
+            headers:{
+                'Authorization': `Bearer ${token}`
+            }
+        })
          .then(res => res.json())
          .then(data => {
              const lst = document.getElementById('lpstLst');
@@ -217,15 +242,18 @@ function init() {
             if (data.postId == '' || data.userId === '') {
                 alert('Please fill out all the fields.');
             }else{
-                fetch('http://localhost:8080/api/likedposts', {
+                fetch('http://127.0.0.1:8080/api/likedposts', {
                     method: 'post',
-                    headers: { 'Content-Type': 'application/json'},
+                    headers: {
+                        'Content-Type': 'application/json', 
+                        'Authorization': `Bearer ${token}`
+                       },
                     body: JSON.stringify(data)
                     
                 })
                     .then(res => res.json())
                     .then(data => {
-                        if (data.message !== null )
+                        if (data.message !== null && data.message !== undefined )
                             alert(data.message);
                         else 
                         document.getElementById('lpstLst').innerHTML += `<li>ID: ${data.id}, postId: ${data.postId}, userId: ${data.userId}</li>`;
@@ -235,7 +263,11 @@ function init() {
          });
 
          //Likes --------------------------------------------------------
-         fetch('http://localhost:8080/api/likes')
+         fetch('http://127.0.0.1:8080/api/likes', {
+            headers:{
+                'Authorization': `Bearer ${token}`
+            }
+        })
          .then(res => res.json())
          .then(data => {
              const lst = document.getElementById('lkLst');
@@ -260,15 +292,17 @@ function init() {
             if (data.postId == '' || data.userId === '') {
                 alert('Please fill out all the fields.');
             }else{
-                fetch('http://localhost:8080/api/likes', {
+                fetch('http://127.0.0.1:8080/api/likes', {
                     method: 'post',
-                    headers: { 'Content-Type': 'application/json'},
+                    headers: {
+                        'Content-Type': 'application/json', 
+                        'Authorization': `Bearer ${token}`
+                       },
                     body: JSON.stringify(data)
-                    
                 })
                     .then(res => res.json())
                     .then(data => {
-                        if (data.message !== null )
+                        if (data.message !== null && data.message !== undefined )
                             alert(data.message);
                         else 
                         document.getElementById('lkLst').innerHTML += `<li>ID: ${data.id}, postId: ${data.postId}, userId: ${data.userId}</li>`;
@@ -278,7 +312,11 @@ function init() {
          });
 
          //Notifications --------------------------------------------------------
-         fetch('http://localhost:8080/api/notifications')
+         fetch('http://127.0.0.1:8080/api/notifications', {
+            headers:{
+                'Authorization': `Bearer ${token}`
+            }
+        })
          .then(res => res.json())
          .then(data => {
              const lst = document.getElementById('notifLst');
@@ -305,15 +343,18 @@ function init() {
             if (data.postId == '' || data.notifType === ''|| data.content === '') {
                 alert('Please fill out all the fields.');
             }else{
-                fetch('http://localhost:8080/api/notifications', {
+                fetch('http://127.0.0.1:8080/api/notifications', {
                     method: 'post',
-                    headers: { 'Content-Type': 'application/json'},
+                    headers: {
+                        'Content-Type': 'application/json', 
+                        'Authorization': `Bearer ${token}`
+                       },
                     body: JSON.stringify(data)
                     
                 })
                     .then(res => res.json())
                     .then(data => {
-                        if (data.message !== null )
+                        if (data.message !== null && data.message !== undefined )
                             alert(data.message);
                         else 
                         document.getElementById('notifLst').innerHTML += `<li>ID: ${data.id}, postId: ${data.postId}, notifType: ${data.notifType}, Content: ${data.content}</li>`;
@@ -323,7 +364,11 @@ function init() {
          });
 
          //Topics --------------------------------------------------------
-         fetch('http://localhost:8080/api/topics')
+         fetch('http://127.0.0.1:8080/api/topics', {
+            headers:{
+                'Authorization': `Bearer ${token}`
+            }
+        })
          .then(res => res.json())
          .then(data => {
              const lst = document.getElementById('tpLst');
@@ -350,15 +395,17 @@ function init() {
              if (data.name == '' || data.userId === ''|| data.description === '') {
                 alert('Please fill out all the fields.');
             }else{
-                fetch('http://localhost:8080/api/topics', {
+                fetch('http://127.0.0.1:8080/api/topics', {
                     method: 'post',
-                    headers: { 'Content-Type': 'application/json'},
+                    headers: {
+                        'Content-Type': 'application/json', 
+                        'Authorization': `Bearer ${token}`
+                       },
                     body: JSON.stringify(data)
-                    
                 })
                     .then(res => res.json())
                     .then(data => {
-                        if (data.message !== null )
+                        if (data.message !== null && data.message !== undefined )
                             alert(data.message);
                         else 
                         document.getElementById('tpLst').innerHTML += `<li>ID: ${data.id}, Name: ${data.name}, userId: ${data.userId}, Description: ${data.description}</li>`;
@@ -368,7 +415,11 @@ function init() {
          });
 
          //Pinned Posts --------------------------------------------------------
-         fetch('http://localhost:8080/api/pinnedposts')
+         fetch('http://127.0.0.1:8080/api/pinnedposts', {
+            headers:{
+                'Authorization': `Bearer ${token}`
+            }
+        })
          .then(res => res.json())
          .then(data => {
              const lst = document.getElementById('ppstLst');
@@ -392,15 +443,18 @@ function init() {
              if (data.name == '' || data.userId === ''|| data.description === '') {
                 alert('Please fill out all the fields.');
             }else{
-                fetch('http://localhost:8080/api/pinnedposts', {
+                fetch('http://127.0.0.1:8080/api/pinnedposts', {
                     method: 'post',
-                    headers: { 'Content-Type': 'application/json'},
+                    headers: {
+                         'Content-Type': 'application/json', 
+                         'Authorization': `Bearer ${token}`
+                        },
                     body: JSON.stringify(data)
                     
                 })
                     .then(res => res.json())
                     .then(data => {
-                        if (data.message !== null )
+                        if (data.message !== null && data.message !== undefined )
                             alert(data.message);
                         else 
                         document.getElementById('ppstLst').innerHTML += `<li>ID: ${data.id}, postId: ${data.postId}, userId: ${data.userId}</li>`;
@@ -410,7 +464,11 @@ function init() {
             }
          });
         //UsersNotifications --------------------------------------------------------
-               fetch('http://localhost:8080/api/usersnotifications')
+               fetch('http://127.0.0.1:8080/api/usersnotifications', {
+                headers:{
+                    'Authorization': `Bearer ${token}`
+                }
+            })
                .then(res => res.json())
                .then(data => {
                    const lst = document.getElementById('unLst');
@@ -434,20 +492,28 @@ function init() {
                 if (data.name == '' || data.userId === ''|| data.description === '') {
                     alert('Please fill out all the fields.');
                 }else{
-                    fetch('http://localhost:8080/api/usersnotifications', {
+                    fetch('http://127.0.0.1:8080/api/usersnotifications', {
                         method: 'post',
-                        headers: { 'Content-Type': 'application/json'},
-                        body: JSON.stringify(data)
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify(data),
                         
                     })
                         .then(res => res.json())
                         .then(data => {
-                            if (data.message !== null )
+                            if (data.message !== null && data.message !== undefined )
                                 alert(data.message);
                             else 
                             document.getElementById('unLst').innerHTML += `<li>ID: ${data.id}, notificationId: ${data.notificationId}, userId: ${data.userId}</li>`;
             
                     });
                 }
+               });
+
+               document.getElementById('logout').addEventListener('click', () => {
+                    document.cookie = `token=;SameSite=Lax`;
+                    window.location.href = 'login.html';
                });
 }

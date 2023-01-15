@@ -2,7 +2,7 @@ const { sequelize , Users, Posts, Likes, Comments, Interests, Topics,
     Notifications, UsersNotifications, PinnedPosts, LikedPosts } = require('../models');
  
  const express = require('express');
-const { INTEGER } = require('sequelize');
+ const { INTEGER } = require('sequelize');
  const cmt = express.Router();
  cmt.use(express.json());
  cmt.use(express.urlencoded({ extended: true }));
@@ -10,74 +10,78 @@ const { INTEGER } = require('sequelize');
  require('dotenv').config();
  const jwt = require('jsonwebtoken');
 
+ const joi = require('joi');
+
+    const validation = joi.object({
+        postId: joi.number().integer().required(),
+        userId: joi.number().integer().required(),
+        content: joi.string().required()
+    .default([]),
+       is_active: joi.boolean().default(true),
+    });
+
  function authToken(req, res, next) {
-    const authHeader = req.headers['authorization'];
+    const authHeader = req.headers['Authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
-     if (token === null) return res.redirect(301, '/login');
- 
-     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, usr) => {
-         if (err) return res.redirect(301, '/login');
- 
-         req.user = usr;
- 
-         next();
-     });
+    if (token === null) return res.status(401).json({message : 'Error'});
+
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, usr) => {
+        if (err) return res.status(403).send({message : 'Access Denied'});
+
+        req.user = usr;
+
+        next();
+    });
  }
 
- cmt.use(authToken);
+ //cmt.use(authToken);
  
  cmt.get('/comments', (req, res) => {
     Comments.findAll()
          .then(rows => res.json(rows))
-         .catch(err => res.status(500).json(err));
+         .catch(err => res.status(500).send({message : 'Error'}));
  });
  
  
  cmt.get('/comments/:id', (req, res) => {
     Comments.findOne({where : {id : req.params.id}})
          .then(rows => res.json(rows))
-         .catch(err => res.status(500).json(err));
+         .catch(err => res.status(500).send({message : 'Error'}));
  });
  
 
  cmt.post('/comments/', authToken, async (req, res) => {
 
-    const existingPost = await Posts.findOne({where : {id : req.body.postId}});
-    const existingUser = await Users.findOne({where : {id : req.body.userId}});
-    let empty = true;
-    let goodInt = true;
+    const payload = {
+        postId : req.body.postId,
+        userId: req.body.userId,
+        content: req.body.content
+    };
+    const {err} = validation.validate(payload);
 
-    if (!Number.isInteger(req.body.postId) || !Number.isInteger(req.body.userId))
-        goodInt = false;
-
-    if(req.body.postId === '' ||req.body.userId === '' || req.body.content === '') 
-        empty = false;
-
-    if (goodInt)  {
-        Comments.create({ postId: req.body.postId, userId: req.body.userId, content: req.body.content})
-         .then(rows => res.json(rows))
-         .catch(err => res.status(500).json(err));
+    if (err)  {
+        res.status(400).send({message : 'Invalid data'})
     }else if (!goodInt){
-        res.status(400).send({message: 'Use exclusively integers for IDs'});
+        Comments.create({ postId: req.body.postId, userId: req.body.userId, content: req.body.content})
+        .then(rows => res.json(rows))
+        .catch(err => res.status(500).send({message : 'Server internal error'}));
     }
     
  });
  
  cmt.put('/comments/:id', async (req, res) => {
 
-    const existingPost = await Posts.findOne({where : {id : req.body.postId}});
-    const existingUser = await Users.findOne({where : {id : req.body.userId}});
-    let empty = true;
-    let goodInt = true;
+    const payload = {
+        postId : req.body.postId,
+        userId: req.body.userId,
+        content: req.body.content
+    };
+    const {err} = validation.validate(payload);
 
-    if (!Number.isInteger(req.body.postId) || !Number.isInteger(req.body.userId))
-        goodInt = false;
-
-    if(req.body.postId === '' ||req.body.userId === '' || req.body.content === '') 
-        empty = false;
-
-    if (goodInt)  {
+    if (err)  {
+        res.status(400).send({message : 'Invalid data'})
+    }else if (!goodInt){
         Comments.findOne({where : {id : req.params.id}})
         .then( cmt => {
             cmt.postId = req.body.postId;
@@ -87,9 +91,7 @@ const { INTEGER } = require('sequelize');
             cmt.save();
         })
         .then( rows => res.json(rows))
-        .catch(err => res.status(500).json(err));
-    }else if (!goodInt){
-        res.status(400).send({message: 'Use integers for IDs'});
+        .catch(() => res.status(500).send({message : 'Server internal error'}));
     }
 
    
@@ -101,7 +103,7 @@ const { INTEGER } = require('sequelize');
          cmt.destroy();
      })
      .then( rows => res.json(rows))
-     .catch(err => res.status(500).json(err));;
+     .catch(() => res.status(500).send({message : 'Server internal error'}));
  });
  
  module.exports = cmt;
