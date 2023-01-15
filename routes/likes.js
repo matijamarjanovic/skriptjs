@@ -19,14 +19,37 @@ lk.get('/likes/:id', (req, res) => {
         .catch(err => res.status(500).json(err));
 });
 
-lk.post('/likes/', (req, res) => {
-    Likes.create({ userId: req.body.userId, postId: req.body.postId })
+lk.post('/likes/', async(req, res) => {
+
+    const existingPost = await Posts.findOne({where : {id : req.body.postId}});
+    const existingUser = await Users.findOne({where : {id : req.body.userId}});
+    const empty = true;
+    if(req.body.postId === '' ||req.body.userId === '') 
+        empty = false;
+
+    if (existingPost && existingUser && !empty) {
+        Likes.create({ userId: req.body.userId, postId: req.body.postId })
         .then(rows => res.json(rows))
         .catch(err => res.status(500).json(err));
+    }else if(empty) {
+        res.status(400).send({message: 'Please fill all the fields!'});
+    }else{
+        res.status(400).send({message: 'Error creating a like, invalid user or post ID'});
+    }
+    
 });
 
-lk.put('/likes/:id', (req, res) => {
-    Likes.findOne({where : {id : req.params.id}})
+lk.put('/likes/:id', async(req, res) => {
+
+    
+    const existingPost = await Posts.findOne({where : {id : req.body.postId}});
+    const existingUser = await Users.findOne({where : {id : req.body.userId}});
+    const empty = true;
+    if(req.body.postId === '' ||req.body.userId === '') 
+        empty = false;
+
+    if (existingPost && existingUser && !empty) {
+        Likes.findOne({where : {id : req.params.id}})
         .then( lk => {
                lk.userId = req.body.userId;
                lk.postId = req.body.postId;
@@ -34,6 +57,13 @@ lk.put('/likes/:id', (req, res) => {
         })
         .then( rows => res.json(rows))
         .catch(err => res.status(500).json(err));
+    }else if(empty) {
+        res.status(400).send({message: 'Please fill all the fields!'});
+    }else{
+        res.status(400).send({message: 'Error creating a like, invalid user or post ID'});
+    }
+    
+    
 });
 
 lk.delete('/likes/:id', (req, res) => {

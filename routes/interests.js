@@ -20,14 +20,38 @@ const { sequelize , Users, Posts, Likes, Comments, Interests, Topics,
             .catch(err => res.status(500).json(err));
     });
     
-    intrst.post('/interests/', (req, res) => {
-       Interests.create({ userId: req.body.userId, topicId: req.body.topicId})
+    intrst.post('/interests/', async(req, res) => {
+
+    const existingTopic = await Topics.findOne({where : {id : req.body.topicId}});
+    const existingUser = await Users.findOne({where : {id : req.body.userId}});
+    
+    const empty = true;
+    if(req.body.topicId === '' ||req.body.userId === '') 
+        empty = false;
+
+    if (existingTopic && existingUser && !empty){
+        Interests.create({ userId: req.body.userId, topicId: req.body.topicId})
             .then(rows => res.json(rows))
             .catch(err => res.status(500).json(err));
+    }else if(empty) {
+        res.status(400).send({message: 'Please fill all the fields!'});
+    }else{
+        res.status(400).send({message: 'Error creating an interest, invalid user or topic ID'});
+    }
+       
     });
     
-    intrst.put('/interests/:id', (req, res) => {
-       Interests.findOne({where : {id : req.params.id}})
+    intrst.put('/interests/:id', async(req, res) => {
+
+        const existingTopic = await Topics.findOne({where : {id : req.body.topicId}});
+        const existingUser = await Users.findOne({where : {id : req.body.userId}});
+        
+        const empty = true;
+        if(req.body.topicId === '' ||req.body.userId === '') 
+            empty = false;
+    
+        if (existingTopic && existingUser && !empty){
+            Interests.findOne({where : {id : req.params.id}})
             .then( intrst=> {
                 intrst.userId = req.body.userId;
                 intrst.topicId = req.body.topicId;
@@ -36,6 +60,12 @@ const { sequelize , Users, Posts, Likes, Comments, Interests, Topics,
             })
             .then( rows => res.json(rows))
             .catch(err => res.status(500).json(err));
+        }else if(empty) {
+            res.status(400).send({message: 'Please fill all the fields!'});
+        }else{
+            res.status(400).send({message: 'Error creating an interest, invalid user or topic ID'});
+        }  
+       
     });
     
     intrst.delete('/interests/:id', (req, res) => {

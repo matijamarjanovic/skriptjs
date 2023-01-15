@@ -19,23 +19,51 @@ const { sequelize , Users, Posts, Likes, Comments, Interests, Topics,
          .catch(err => res.status(500).json(err));
  });
  
- cmt.post('/comments/', (req, res) => {
-    Comments.create({ postId: req.body.postId, userId: req.body.userId, content: req.body.content})
+ cmt.post('/comments/', async (req, res) => {
+
+    const existingPost = await Posts.findOne({where : {id : req.body.postId}});
+    const existingUser = await Users.findOne({where : {id : req.body.userId}});
+    const empty = true;
+    if(req.body.postId === '' ||req.body.userId === '' || req.body.content === '') 
+        empty = false;
+
+    if (existingPost && existingUser && !empty) {
+        Comments.create({ postId: req.body.postId, userId: req.body.userId, content: req.body.content})
          .then(rows => res.json(rows))
          .catch(err => res.status(500).json(err));
+    }else if(empty) {
+        res.status(400).send({message: 'Please fill all the fields!'});
+    }else{
+        res.status(400).send({message: 'Error creating a comment, invalid user or post ID'});
+    }
+    
  });
  
- cmt.put('/comments/:id', (req, res) => {
-    Comments.findOne({where : {id : req.params.id}})
-         .then( cmt => {
-             cmt.postId = req.body.postId;
-             cmt.userId = req.body.userId;
-             cmt.content = req.body.content;
- 
-             cmt.save();
-         })
-         .then( rows => res.json(rows))
-         .catch(err => res.status(500).json(err));
+ cmt.put('/comments/:id', async (req, res) => {
+
+    const existingPost = await Posts.findOne({where : {id : req.body.postId}});
+    const existingUser = await Users.findOne({where : {id : req.body.userId}});
+    const empty = true;
+    if(req.body.postId === '' ||req.body.userId === '' || req.body.content === '') 
+        empty = false;
+
+    if (existingPost && existingUser && !empty) {
+        Comments.findOne({where : {id : req.params.id}})
+        .then( cmt => {
+            cmt.postId = req.body.postId;
+            cmt.userId = req.body.userId;
+            cmt.content = req.body.content;
+
+            cmt.save();
+        })
+        .then( rows => res.json(rows))
+        .catch(err => res.status(500).json(err));
+    }else if(empty) {
+        res.status(400).send({message: 'Please fill all the fields!'});
+    }else{
+        res.status(400).send({message: 'Error creating a comment, invalid user or post ID'});
+    }
+    
  });
  
  cmt.delete('/comments/:id', (req, res) => {

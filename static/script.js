@@ -1,4 +1,13 @@
 const e = require("express");
+const { sequelize , Users, Posts, Likes, Comments, Interests, Topics,
+    Notifications, UsersNotifications, PinnedPosts, LikedPosts } = require('../models');
+ 
+const joi = require('joi');
+const signupSchema = joi.object({
+    email: joi.string().email().required(),
+    password: joi.string().min(4).max(20).required(),
+    name: joi.string().required()
+})
 
 function init() {
 
@@ -21,21 +30,38 @@ function init() {
                 password: document.getElementById('password').value
                 
             }
+            console.log(data);
             document.getElementById('userName').value = '';
             document.getElementById('email').value = '';
             document.getElementById('password').value = '';
+              
+            if( data.name === '' || data.email === '' || data.password === ''){
+                alert('Please fill out all the fields.');
+            }else if (!data.email.includes('@')){
+                alert('Please enter valid data.');
+            }else{
 
-            fetch('http://localhost:8080/api/users', {
-                method: 'post',
-                headers: { 'Content-Type': 'application/json'},
-                body: JSON.stringify(data)
-                
-            })
-                .then(res => res.json())
-                .then(data => {
-                    document.getElementById('usrLst').innerHTML += `<li>ID: ${data.id}, Name: ${data.name}, Email: ${data.email}, Password: ${data.password}</li>`;
-   
-            });
+                fetch('http://localhost:8080/api/users', {
+                    method: 'post',
+                    headers: { 'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                    
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.message === "User already exists in the database!")
+                            alert(data.message);
+                        else if (data.message === 'Email already exists in the database!')
+                            alert(data.message);
+                        else if (data.message === 'Email not valid')
+                            alert(data.message);
+                        else if (data.message === 'Password has to be between 4 and 20 characters')
+                            alert(data.message);
+                        else
+                            document.getElementById('usrLst').innerHTML += `<li>ID: ${data.id}, Name: ${data.name}, Email: ${data.email}, Password: ${data.password}</li>`;
+    
+                });
+            }
         });
 
         //Posts --------------------------------------------------------
@@ -64,17 +90,26 @@ function init() {
             document.getElementById('pstcontent').value = '';
             document.getElementById('pstuserId').value = '';
 
-            fetch('http://localhost:8080/api/posts', {
-                method: 'post',
-                headers: { 'Content-Type': 'application/json'},
-                body: JSON.stringify(data)
-                
-            })
-                .then(res => res.json())
-                .then(data => {
-                    document.getElementById('pstLst').innerHTML += `<li>ID: ${data.id}, Title: ${data.title}, Content: ${data.content}, topicId: ${data.topicId}, userId: ${data.userId}</li>`;
-   
-            });
+            if (data.topicId == '' || data.userId === ''|| data.title === '' || data.content === '') {
+                alert('Please fill out all the fields.');
+            }else{
+                fetch('http://localhost:8080/api/posts', {
+                    method: 'post',
+                    headers: { 'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                    
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.message === 'Please fill all the fields!' )
+                            alert(data.message);
+                        else if (data.message === 'Error creating a post, invalid user or topic ID')
+                            alert(data.message);
+                        else 
+                            document.getElementById('pstLst').innerHTML += `<li>ID: ${data.id}, Title: ${data.title}, Content: ${data.content}, topicId: ${data.topicId}, userId: ${data.userId}</li>`;
+                        
+                });
+            }
         });
 
         //Comments --------------------------------------------------------
@@ -84,7 +119,7 @@ function init() {
             const lst = document.getElementById('cmtLst');
 
             data.forEach( el => {
-                lst.innerHTML += `<li>ID: ${el.id}, Content: ${el.content}, postId: ${el.postId}, userId: ${el.userId}</li>`;
+                lst.innerHTML += `<li>ID: ${el.id}, postId: ${el.postId}, userId: ${el.userId}, Content: ${el.content}</li>`;
             })
         });    
 
@@ -101,19 +136,26 @@ function init() {
             document.getElementById('cmtpostId').value = '';
             document.getElementById('cmtuserId').value = '';
             document.getElementById('cmtcontent').value = '';
-
-            console.log(JSON.stringify(data));
-            fetch('http://localhost:8080/api/comments', {
-                method: 'post',
-                headers: { 'Content-Type': 'application/json'},
-                body: JSON.stringify(data)
-                
-            })
-                .then(res => res.json())
-                .then(data => {
-                    document.getElementById('cmtLst').innerHTML += `<li>ID: ${data.id}, Content: ${data.content}, userId: ${data.userId}, postId: ${data.postId}</li>`;
-   
-            });
+            if (data.topicId == '' || data.userId === '' || data.content === '') {
+                alert('Please fill out all the fields.');
+            }else{
+                fetch('http://localhost:8080/api/comments', {
+                    method: 'post',
+                    headers: { 'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                    
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if(data.message ==='Error creating a comment, invalid user or post ID')
+                            alert(data.message);
+                        else if (data.message ==='Please fill all the fields!')
+                            alert(data.message);
+                        else
+                            document.getElementById('cmtLst').innerHTML += `<li>ID: ${data.id}, userId: ${data.userId}, postId: ${data.postId}, Content: ${data.content}</li>`;
+    
+                });
+            }
         });
 
         //Interests --------------------------------------------------------
@@ -139,17 +181,27 @@ function init() {
             document.getElementById('intrtopicId').value = '';
             document.getElementById('intruserId').value = '';
 
-            fetch('http://localhost:8080/api/interests', {
-                method: 'post',
-                headers: { 'Content-Type': 'application/json'},
-                body: JSON.stringify(data)
-                
-            })
-                .then(res => res.json())
-                .then(data => {
-                    document.getElementById('intrLst').innerHTML += `<li>ID: ${data.id}, topicId: ${data.topicId}, userId: ${data.userId}</li>`;
-   
-            });
+            if (data.topicId == '' || data.userId === '') {
+                alert('Please fill out all the fields.');
+            }else{
+                fetch('http://localhost:8080/api/interests', {
+                    method: 'post',
+                    headers: { 'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                    
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        
+                        if (data.message === 'Error creating an interest, invalid user or topic ID')
+                            alert(data.message);
+                        else if (data.message ==='Please fill all the fields!')
+                            alert(data.message);
+                        else
+                            document.getElementById('intrLst').innerHTML += `<li>ID: ${data.id}, topicId: ${data.topicId}, userId: ${data.userId}</li>`;
+    
+                });
+            }
         });
 
          //LikedPosts --------------------------------------------------------
@@ -174,18 +226,26 @@ function init() {
              }
              document.getElementById('lpstpostId').value = '';
              document.getElementById('lpstuserId').value = '';
- 
-             fetch('http://localhost:8080/api/likedposts', {
-                 method: 'post',
-                 headers: { 'Content-Type': 'application/json'},
-                 body: JSON.stringify(data)
-                 
-             })
-                 .then(res => res.json())
-                 .then(data => {
-                     document.getElementById('lpstLst').innerHTML += `<li>ID: ${data.id}, postId: ${data.postId}, userId: ${data.userId}</li>`;
-    
-             });
+            if (data.postId == '' || data.userId === '') {
+                alert('Please fill out all the fields.');
+            }else{
+                fetch('http://localhost:8080/api/likedposts', {
+                    method: 'post',
+                    headers: { 'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                    
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.message === 'Error creating a liked post, invalid user or post ID')
+                            alert(data.message);
+                        else if (data.message === 'Please fill all the fields!')
+                            alert(data.message);
+                        else
+                        document.getElementById('lpstLst').innerHTML += `<li>ID: ${data.id}, postId: ${data.postId}, userId: ${data.userId}</li>`;
+        
+                });
+            }
          });
 
          //Likes --------------------------------------------------------
@@ -210,18 +270,27 @@ function init() {
              }
              document.getElementById('lkpostId').value = '';
              document.getElementById('lkuserId').value = '';
- 
-             fetch('http://localhost:8080/api/likes', {
-                 method: 'post',
-                 headers: { 'Content-Type': 'application/json'},
-                 body: JSON.stringify(data)
-                 
-             })
-                 .then(res => res.json())
-                 .then(data => {
-                     document.getElementById('lkLst').innerHTML += `<li>ID: ${data.id}, postId: ${data.postId}, userId: ${data.userId}</li>`;
-    
-             });
+
+            if (data.postId == '' || data.userId === '') {
+                alert('Please fill out all the fields.');
+            }else{
+                fetch('http://localhost:8080/api/likes', {
+                    method: 'post',
+                    headers: { 'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                    
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.message === 'Please fill all the fields!')
+                            alert(data.message);
+                        else if (data.message === 'Error creating a like, invalid user or post ID')
+                            alert(data.message);
+                        else
+                        document.getElementById('lkLst').innerHTML += `<li>ID: ${data.id}, postId: ${data.postId}, userId: ${data.userId}</li>`;
+        
+                });
+            }
          });
 
          //Notifications --------------------------------------------------------
@@ -249,18 +318,26 @@ function init() {
              document.getElementById('notifType').value = '';
              document.getElementById('notifContent').value = '';
 
-
-             fetch('http://localhost:8080/api/notifications', {
-                 method: 'post',
-                 headers: { 'Content-Type': 'application/json'},
-                 body: JSON.stringify(data)
-                 
-             })
-                 .then(res => res.json())
-                 .then(data => {
-                     document.getElementById('notifLst').innerHTML += `<li>ID: ${data.id}, postId: ${data.postId}, notifType: ${data.notifType}, Content: ${data.content}</li>`;
-    
-             });
+            if (data.postId == '' || data.notifType === ''|| data.content === '') {
+                alert('Please fill out all the fields.');
+            }else{
+                fetch('http://localhost:8080/api/notifications', {
+                    method: 'post',
+                    headers: { 'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                    
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.message === 'Please fill all the fields!')
+                            alert(data.message);
+                        else if (data.message === 'Error creating a notification, invalid post ID or notification is not written correctly.')
+                            alert(data.message);
+                        else
+                        document.getElementById('notifLst').innerHTML += `<li>ID: ${data.id}, postId: ${data.postId}, notifType: ${data.notifType}, Content: ${data.content}</li>`;
+        
+                });
+            }
          });
 
          //Topics --------------------------------------------------------
@@ -288,17 +365,26 @@ function init() {
              document.getElementById('tpuserId').value = '';
              document.getElementById('description').value = '';
              
-             fetch('http://localhost:8080/api/topics', {
-                 method: 'post',
-                 headers: { 'Content-Type': 'application/json'},
-                 body: JSON.stringify(data)
-                 
-             })
-                 .then(res => res.json())
-                 .then(data => {
-                     document.getElementById('tpLst').innerHTML += `<li>ID: ${data.id}, Name: ${data.name}, userId: ${data.userId}, Description: ${data.description}</li>`;
-    
-             });
+             if (data.name == '' || data.userId === ''|| data.description === '') {
+                alert('Please fill out all the fields.');
+            }else{
+                fetch('http://localhost:8080/api/topics', {
+                    method: 'post',
+                    headers: { 'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                    
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.message === 'Please fill all the fields!')
+                            alert(data.message);
+                        else if (data.message === 'Error creating a topic, invalid user ID')
+                            alert(data.message);
+                        else
+                        document.getElementById('tpLst').innerHTML += `<li>ID: ${data.id}, Name: ${data.name}, userId: ${data.userId}, Description: ${data.description}</li>`;
+        
+                });
+            }
          });
 
          //Pinned Posts --------------------------------------------------------
@@ -322,18 +408,26 @@ function init() {
              }
              document.getElementById('ppstpostId').value = '';
              document.getElementById('ppstuserId').value = '';
-             
-             fetch('http://localhost:8080/api/pinnedposts', {
-                 method: 'post',
-                 headers: { 'Content-Type': 'application/json'},
-                 body: JSON.stringify(data)
-                 
-             })
-                 .then(res => res.json())
-                 .then(data => {
-                     document.getElementById('ppstLst').innerHTML += `<li>ID: ${data.id}, postId: ${data.postId}, userId: ${data.userId}</li>`;
-    
-             });
+             if (data.name == '' || data.userId === ''|| data.description === '') {
+                alert('Please fill out all the fields.');
+            }else{
+                fetch('http://localhost:8080/api/pinnedposts', {
+                    method: 'post',
+                    headers: { 'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                    
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.message === 'Please fill all the fields!')
+                            alert(data.message);
+                        else if (data.message === 'Error creating a pinned post, invalid user or post ID')
+                            alert(data.message);
+                        else
+                        document.getElementById('ppstLst').innerHTML += `<li>ID: ${data.id}, postId: ${data.postId}, userId: ${data.userId}</li>`;
+        
+                });
+            }
          });
         //UsersNotifications --------------------------------------------------------
                fetch('http://localhost:8080/api/usersnotifications')
@@ -356,17 +450,26 @@ function init() {
                    }
                    document.getElementById('notificationId').value = '';
                    document.getElementById('unuserId').value = '';
-                   
-                   fetch('http://localhost:8080/api/usersnotifications', {
-                       method: 'post',
-                       headers: { 'Content-Type': 'application/json'},
-                       body: JSON.stringify(data)
-                       
-                   })
-                       .then(res => res.json())
-                       .then(data => {
-                           document.getElementById('unLst').innerHTML += `<li>ID: ${data.id}, notificationId: ${data.notificationId}, userId: ${data.userId}</li>`;
-          
-                   });
+
+                if (data.name == '' || data.userId === ''|| data.description === '') {
+                    alert('Please fill out all the fields.');
+                }else{
+                    fetch('http://localhost:8080/api/usersnotifications', {
+                        method: 'post',
+                        headers: { 'Content-Type': 'application/json'},
+                        body: JSON.stringify(data)
+                        
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.message === 'Please fill all the fields!')
+                                alert(data.message);
+                            else if (data.message === 'Error creating a usernotification, invalid user or notification ID')
+                                alert(data.message);
+                            else
+                            document.getElementById('unLst').innerHTML += `<li>ID: ${data.id}, notificationId: ${data.notificationId}, userId: ${data.userId}</li>`;
+            
+                    });
+                }
                });
 }

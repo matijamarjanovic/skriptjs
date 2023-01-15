@@ -20,24 +20,54 @@ const { sequelize , Users, Posts, Likes, Comments, Interests, Topics,
             .catch(err => res.status(500).json(err));
     });
     
-    pst.post('/posts/', (req, res) => {
-       Posts.create({ userId: req.body.userId, topicId: req.body.topicId, title: req.body.title, content: req.body.content})
+    pst.post('/posts/', async(req, res) => {
+
+        const existingTopic = await Topics.findOne({where : {id : req.body.topicId}});
+        const existingUser = await Users.findOne({where : {id : req.body.userId}});
+        const empty = true;
+        if(req.body.userId === '' ||req.body.topicId === '' || req.body.title === '' || req.body.content === '')  
+            empty = false;
+
+        if (existingUser && existingTopic && !empty){
+            Posts.create({ userId: req.body.userId, topicId: req.body.topicId, title: req.body.title, content: req.body.content})
             .then(rows => res.json(rows))
             .catch(err => res.status(500).json(err));
+        }else if(empty) {
+            res.status(400).send({message: 'Please fill all the fields!'});
+        }else{
+            res.status(400).send({message: 'Error creating a post, invalid user or topic ID'});
+        }
+        
+       
     });
     
-    pst.put('/posts/:id', (req, res) => {
-       Posts.findOne({where : {id : req.params.id}})
+    pst.put('/posts/:id', async(req, res) => {
+
+        const existingTopic = await Topics.findOne({where : {id : req.body.topicId}});
+        const existingUser = await Users.findOne({where : {id : req.body.userId}});
+        const empty = true;
+        if(req.body.userId === '' ||req.body.topicId === '' || req.body.title === '' || req.body.content === '')  
+            empty = false;
+
+        if (existingUser && existingTopic && !empty){
+            Posts.findOne({where : {id : req.params.id}})
             .then( pst=> {
                 pst.userId = req.body.userId;
                 pst.topicId = req.body.topicId;
                 pst.title = req.body.title;
                 pst.content = req.body.content;
-    
+     
                 pst.save();
             })
             .then( rows => res.json(rows))
             .catch(err => res.status(500).json(err));
+        }else if(empty) {
+            res.status(400).send({message: 'Please fill all the fields!'});
+        }else{
+            res.status(400).send({message: 'Error creating a post, invalid user or topic ID'});
+        }
+        
+       
     });
     
     pst.delete('/posts/:id', (req, res) => {

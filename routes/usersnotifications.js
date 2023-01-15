@@ -19,14 +19,35 @@ usrsnotif.get('/usersnotifications/:id', (req, res) => {
         .catch(err => res.status(500).json(err));
 });
 
-usrsnotif.post('/usersnotifications/', (req, res) => {
-    UsersNotifications.create({ userId: req.body.userId, notificationId: req.body.notificationId})
+usrsnotif.post('/usersnotifications/', async(req, res) => {
+    const existingNotification = await Notifications.findOne({where : {id : req.body.notificationId}});
+    const existingUser = await Users.findOne({where : {id : req.body.userId}});
+
+    if(req.body.notificationId === '' ||req.body.userId === '')
+    empty = false;
+    if (existingNotification && existingUser && !empty) {
+        Notifications.create({ userId: req.body.userId, notificationId: req.body.notificationId })
         .then(rows => res.json(rows))
         .catch(err => res.status(500).json(err));
+
+    }else if (empty){
+        res.status(400).send({message: 'Please fill all the fields!'});
+    }else{
+        res.status(400).send({message: 'Error creating a usernotification, invalid user or notification ID'});
+    }
 });
 
-usrsnotif.put('/usersnotifications/:id', (req, res) => {
-    UsersNotifications.findOne({where : {id : req.params.id}})
+usrsnotif.put('/usersnotifications/:id', async(req, res) => {
+
+    const existingNotification = await Notifications.findOne({where : {id : req.body.notificationId}});
+    const existingUser = await Users.findOne({where : {id : req.body.userId}});
+    const empty = true;
+
+    if(req.body.notificationId === '' ||req.body.userId === '')
+        empty = false;
+
+    if (existingNotification && existingUser && !empty) {
+        UsersNotifications.findOne({where : {id : req.params.id}})
         .then( usrsnotif => {
                usrsnotif.userId = req.body.userId;
                usrsnotif.notificationId = req.body.notificationId;
@@ -35,6 +56,12 @@ usrsnotif.put('/usersnotifications/:id', (req, res) => {
         })
         .then( rows => res.json(rows))
         .catch(err => res.status(500).json(err));
+    }else if (empty){
+        res.status(400).send({message: 'Please fill all the fields!'});
+    }else{
+        res.status(400).send({message: 'Error updating a usernotification, invalid user or notification ID'});
+    }
+    
 });
 
 usrsnotif.delete('/usersnotifications/:id', (req, res) => {
