@@ -1,16 +1,16 @@
 const express = require('express');
 const path  = require('path');
 
-const cmgui = require('./routes/cmgui.js');
-const ingui = require('./routes/ingui.js');
-const lkgui = require('./routes/lkgui.js');
-const lpgui = require('./routes/lpgui.js');
-const ntgui = require('./routes/ntgui.js');
-const ppgui = require('./routes/ppgui.js');
-const psgui = require('./routes/psgui.js');
-const tpgui = require('./routes/tpgui.js');
-const ungui = require('./routes/ungui.js');
-const usgui = require('./routes/usgui.js');
+const cmgui = require('./routes/comments.js');
+const ingui = require('./routes/interests.js');
+const lkgui = require('./routes/likes.js');
+const lpgui = require('./routes/likedposts.js');
+const ntgui = require('./routes/notifications.js');
+const ppgui = require('./routes/pinnedposts.js');
+const psgui = require('./routes/posts.js');
+const tpgui = require('./routes/topics.js');
+const ungui = require('./routes/usersnotifications.js');
+const usgui = require('./routes/users.js');
 
 const {sequelize} = require('./models');
 const app = express();
@@ -18,7 +18,7 @@ const app = express();
 const cors = require('cors');
 
 var corsOptions = {
-    origin: '127.0.0.1:8080',
+    origin: '*',
     optionsSuccessStatus: 200
 }
 

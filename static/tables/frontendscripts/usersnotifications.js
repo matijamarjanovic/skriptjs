@@ -1,6 +1,6 @@
 function init() {
  
-    fetch('http://127.0.0.1:8080/api/likes',{
+    fetch('http://127.0.0.1:8080/api/usersnotifications',{
         headers:{
             'Content-Type': 'application/json'
         }

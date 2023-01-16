@@ -11,8 +11,6 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="/comments.js" type="type/javascript"></script>
-
 </head>
   <body onload = "init()">
     <div class="container">
@@ -136,5 +134,34 @@
 			</div>
 		</div>
 	</div>
+	<script type="text/javascript">
+		    fetch('http://127.0.0.1:8080/api/comments',{
+        headers:{
+            'Content-Type': 'application/json'
+        }
+        
+    })
+        .then(res => res.json())
+        .then(data => {
+            const tbl = document.getElementById('table');
+            console.log(data);
+
+            data.forEach( el => {
+                tbl.innerHTML += 
+                `<tr>
+                <td> ${el.id}</td>
+                <td>${el.postId}</td>
+                <td>${el.userId}</td>
+                <td> ${el.content}</td>
+                <td> ${el.createdAt}</td>
+                <td>
+                    <a href="#editEmployeeModal" class="edit" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
+                    <a href="#deleteEmployeeModal" class="delete" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
+                </td>
+            </tr>`;
+            })
+        });
+
+	</script>
 </body>
 </html>
