@@ -64,6 +64,10 @@ function authToken(req, res, next) {
 }
 
 app.get('/', authToken, (req, res) =>{
+    res.sendFile('homepage.html', {root: './static'});
+});
+
+app.get('/api', authToken, (req, res) =>{
     res.sendFile('index.html', {root: './static'});
 });
 

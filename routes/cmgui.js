@@ -13,4 +13,4 @@ cmt.get('/comments', (req, res) =>{
     .catch(err => res.status(500).send({message : 'Error'}));
 });
 
- module.exports = cmt;
+module.exports = cmt;

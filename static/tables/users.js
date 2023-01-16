@@ -15,9 +15,9 @@ function init() {
                 tbl.innerHTML += 
                 `<tr>
                 <td> ${el.id}</td>
-                <td>${el.postId}</td>
-                <td>${el.userId}</td>
-                <td> ${el.content}</td>
+                <td>${el.name}</td>
+                <td>${el.email}</td>
+                <td>${el.password}</td>
                 <td> ${el.createdAt}</td>
                 <td>
                     <a href="#editEmployeeModal" class="edit" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>

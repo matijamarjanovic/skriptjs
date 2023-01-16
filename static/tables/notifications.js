@@ -1,6 +1,6 @@
 function init() {
  
-    fetch('http://127.0.0.1:8080/api/users',{
+    fetch('http://127.0.0.1:8080/api/notifications',{
         headers:{
             'Content-Type': 'application/json'
         }
@@ -16,7 +16,7 @@ function init() {
                 `<tr>
                 <td> ${el.id}</td>
                 <td>${el.postId}</td>
-                <td>${el.userId}</td>
+                <td>${el.notifType}</td>
                 <td> ${el.content}</td>
                 <td> ${el.createdAt}</td>
                 <td>
@@ -26,6 +26,4 @@ function init() {
             </tr>`;
             })
         });
-
-
   }

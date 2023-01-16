@@ -1,6 +1,6 @@
 function init() {
  
-    fetch('http://127.0.0.1:8080/api/users',{
+    fetch('http://127.0.0.1:8080/api/likes',{
         headers:{
             'Content-Type': 'application/json'
         }
@@ -15,9 +15,8 @@ function init() {
                 tbl.innerHTML += 
                 `<tr>
                 <td> ${el.id}</td>
-                <td>${el.postId}</td>
+                <td>${el.notificationId}</td>
                 <td>${el.userId}</td>
-                <td> ${el.content}</td>
                 <td> ${el.createdAt}</td>
                 <td>
                     <a href="#editEmployeeModal" class="edit" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
