@@ -60,6 +60,8 @@ app.post('/login', (req, res) =>{
         }).catch(err => res.status(500).send({message : "Error logging in (internal server error)"}));
 });
 
-app.listen({port: process.env.PORT ||9090} , async() => {
+
+
+app.listen({port: process.env.PORT || 9090} , async() => {
     await sequelize.authenticate();
 });

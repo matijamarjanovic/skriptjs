@@ -19,6 +19,7 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const app = express();
+const auth = require('./app_auth.js');
 
 const cors = require('cors');
 
@@ -26,6 +27,7 @@ var corsOptions = {
     origin: '*',
     optionsSuccessStatus: 200
 }
+
 
 app.use(cors(corsOptions)); 
 
@@ -61,6 +63,7 @@ function authToken(req, res, next) {
     const cookies = getCookies(req);
     const token = cookies['token'];
 
+    console.log(token);
     if (token === null) return res.redirect(301, '/login');
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, usr) => {
@@ -72,14 +75,17 @@ function authToken(req, res, next) {
     });
 }
 
+
 app.get('/', authToken, (req, res) =>{
     res.sendFile('homepage.html', {root: './static'});
 });
 
-app.get('/api', authToken, (req, res) =>{
-    res.sendFile('index.html', {root: './static'});
+app.get('/api', (req, res) =>{
+    res.sendFile('index_1.html', {root: './static'});
 });
-
+app.get('/', (req, res)=>{
+    res.redirect(301, '/auth/login');
+})
 app.get('/login', (req, res) => {
     res.sendFile('login.html', { root: './static' });
 });

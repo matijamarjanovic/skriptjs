@@ -25,7 +25,7 @@ function init() {
         if (err) {
             alert('Invalid data entered');
         }else {
-            fetch('http://localhost:9090/login',{
+            fetch('http://localhost:8080/auth/login',{
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
