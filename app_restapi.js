@@ -20,6 +20,15 @@ require('dotenv').config();
 
 const app = express();
 
+const cors = require('cors');
+
+var corsOptions = {
+    origin: '*',
+    optionsSuccessStatus: 200
+}
+
+app.use(cors(corsOptions)); 
+
 app.use('/api', usrs);
 app.use('/api', psts);
 app.use('/api', cmts);
