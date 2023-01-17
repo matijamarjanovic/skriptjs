@@ -80,6 +80,6 @@ app.get('/register',  (req, res) => {
 });
 
 
-app.listen({ port: 8080 || process.env.PORT }, async() => {
+app.listen({port: process.env.PORT ||  8080 }, async() => {
     await sequelize.authenticate();
 });
