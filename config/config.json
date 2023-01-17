@@ -8,11 +8,12 @@
     "logging": false
   },
   "test": {
-    "username": "root",
-    "password": null,
-    "database": "database_test",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
+    "username": "doadmin",
+    "password": "AVNS_pl3yotBqHb5il6nhsRx",
+    "database": "defaultdb",
+    "host": "faxskripte-do-user-13338512-0.b.db.ondigitalocean.com",
+    "dialect": "mysql",
+    "port": 25060
   },
   "production": {
     "username": "root",
