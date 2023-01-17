@@ -39,7 +39,7 @@ function init() {
                         document.cookie = `token=${el.token};SameSite=Lax`;
                         window.location.href = 'index.html';
                     }
-                })
+                }).catch(err => alert(err));
         }
 
 
