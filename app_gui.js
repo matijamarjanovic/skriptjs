@@ -79,6 +79,6 @@ app.get('/usersnotifications', (req, res) =>{
     res.sendFile('usersnotifications.html', {root: './static/tables'});
 });
 
-app.listen({ port: 6060 }, async() => {
+app.listen({ port: process.env.PORT || 6060 }, async() => {
     await sequelize.authenticate();
 });
